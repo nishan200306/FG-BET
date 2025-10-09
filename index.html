@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>FG BET - Welcome</title>
+  <meta name="theme-color" content="#10141f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+  <style>
+    :root{--bg-dark:#10141f;--bg-card:#1a202c;--primary-glow:#00aaff;--secondary-glow:#e100ff;--text-white:#f7fafc;--text-light:#cbd5e1;--success-color:#38a169;--warning:#ff9f1a;--danger:#e11d48;--aviator-bg:#0f1118;--aviator-card-bg:#202534;--aviator-green:#28c931;--aviator-red:#f83165;--aviator-yellow:#ffc400;--aviator-text-muted:#848b9c;}
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{font-family:'Poppins',sans-serif;background:var(--bg-dark);color:var(--text-white);overflow-x:hidden}
+    a,button{cursor:pointer}
+    :focus-visible{outline:2px solid var(--primary-glow);outline-offset:2px}
+    #preloader{position:fixed;inset:0;background:#1a1a1a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .7s,visibility .7s}
+    #preloader.hidden{opacity:0;visibility:hidden}
+    .loader-text{font-size:3rem;text-shadow:0 0 10px #ffd700,0 0 20px #ffd700;animation:pulse 1.5s infinite}
+    .spinner{width:60px;height:60px;border:5px solid #444;border-top:5px solid #ffd700;border-radius:50%;animation:spin 1s linear infinite}
+    #auth-screen{position:fixed;inset:0;background:radial-gradient(circle at 50% 0%,#1a202c 0%,#10141f 40%);z-index:9990;display:none;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px;text-align:center}
+    .auth-container{display:flex;flex-direction:column;justify-content:space-between;height:100%;width:100%;max-width:380px;animation:fadeInAuth .6s ease-out}
+    @keyframes fadeInAuth{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .auth-logo-area{flex-shrink:0}
+    .auth-logo{font-size:3.5rem;font-weight:700;text-shadow:0 0 20px var(--primary-glow),0 0 10px var(--secondary-glow);margin-bottom:20px}
+    .auth-welcome h2{font-size:1.5rem;margin-bottom:5px}
+    .auth-welcome p{color:var(--text-light);font-size:1rem}
+    .auth-actions{width:100%;padding-bottom:env(safe-area-inset-bottom)}
+    .auth-btn{width:100%;padding:15px;border:none;border-radius:12px;font-size:1.1rem;font-weight:600;cursor:pointer;margin-bottom:15px;transition:all .2s ease-in-out;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 15px rgba(0,0,0,.2)}
+    .auth-btn:active{transform:scale(.97);box-shadow:0 2px 10px rgba(0,0,0,.2)}
+    #login-btn{background:transparent;color:var(--text-light);border:2px solid var(--bg-card)}
+    #login-btn:hover{background:var(--bg-card);color:var(--text-white)}
+    #register-btn{background:linear-gradient(45deg,var(--success-color),#48bb78);color:var(--text-white);border:2px solid transparent}
+    #register-btn:hover{filter:brightness(1.1)}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);z-index:9996;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.show{display:flex}
+    .modal-content{background:var(--bg-card);padding:25px;border-radius:16px;width:100%;max-width:350px;position:relative;border:1px solid rgba(255,255,255,.1);animation:zoomIn .3s ease-out}
+    @keyframes zoomIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+    .modal-content h2{font-size:1.6rem;margin-bottom:20px;text-align:center}
+    .input-group{margin-bottom:15px}
+    .input-group input,.input-group select{width:100%;background:var(--bg-dark);border:1px solid rgba(255,255,255,.2);color:var(--text-white);padding:12px;border-radius:8px;font-size:1rem}
+    #login-error-msg{color:var(--danger);text-align:center;margin-bottom:15px;font-size:.9rem;min-height:1.2rem}
+    #login-submit-btn,#withdraw-confirm-btn{width:100%;padding:12px;background:var(--primary-glow);color:#fff;border:none;border-radius:8px;font-size:1.1rem;font-weight:600}
+    .close-modal-btn{position:absolute;top:10px;right:10px;background:transparent;border:none;color:var(--text-light);font-size:1.5rem;cursor:pointer}
+    #country-list{max-height:40vh;overflow-y:auto;margin-top:15px;padding-right:5px}
+    .country-item{padding:12px 10px;border-radius:8px;cursor:pointer;transition:background-color .2s;display:flex;align-items:center;gap:12px}
+    .country-item:hover{background-color:var(--bg-dark)}
+    .country-item .flag{font-size:1.5rem}
+    #reg-success-modal{position:fixed;bottom:0;left:0;right:0;background:#f0f2f5;color:#111;z-index:9997;border-top-left-radius:20px;border-top-right-radius:20px;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom));text-align:center;transform:translateY(100%);transition:transform .4s ease-in-out}
+    #reg-success-modal.show{transform:translateY(0)}
+    .reg-icon{width:50px;height:50px;background:#e0e0e0;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px}
+    .reg-icon i{font-size:1.8rem;color:var(--success-color)}
+    .reg-title{font-size:1.5rem;font-weight:600;margin-bottom:20px}
+    .reg-details{background:#fff;border-radius:12px;padding:15px;margin-bottom:20px;text-align:left}
+    .reg-detail-item{display:flex;justify-content:space-between;align-items:center;font-size:1rem;padding:10px 0}
+    .reg-detail-item:first-child{border-bottom:1px solid #eee}
+    .reg-detail-item span:first-child{color:#555}
+    .reg-detail-item span:last-child{font-weight:600;font-family:monospace;font-size:1.1rem}
+    .reg-actions{display:flex;gap:10px;margin-bottom:20px}
+    .reg-action-btn{flex:1;padding:12px;background:#e0e0e0;color:#333;border:none;border-radius:8px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px}
+    #reg-next-btn{width:100%;background:#222;color:#fff;padding:15px;border:none;border-radius:8px;font-size:1.1rem;font-weight:600}
+    #main-content{display:none;animation:fadeIn .5s ease-in;padding-bottom:80px}
+    .top-header{position:sticky;top:0;z-index:1000;background:rgba(26,32,44,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:calc(10px + env(safe-area-inset-top)) 15px 10px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:space-between}
+    .balance-btn{background:var(--success-color);border:none;padding:8px 12px;border-radius:20px;font-weight:600;color:var(--text-white)}
+    .header-logo{font-size:1.8rem;font-weight:700;text-shadow:0 0 8px var(--primary-glow)}
+    .icon-btn{background:transparent;border:0;padding:4px;color:inherit}
+    .header-search i{font-size:1.5rem;color:var(--text-light)}
+    .main-nav{background:var(--bg-card);display:flex;justify-content:space-around;padding:15px 0}
+    .nav-item{color:var(--text-light);text-decoration:none;font-size:1rem;font-weight:500;padding:5px 10px;border-bottom:3px solid transparent;transition:color .3s,border-color .3s}
+    .nav-item.active{color:var(--primary-glow);border-bottom-color:var(--primary-glow);text-shadow:0 0 8px var(--primary-glow)}
+    .content-padding{padding:20px 15px}
+    .section-title{font-size:1.3rem;font-weight:600;margin-bottom:15px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg-card);display:flex;justify-content:space-around;align-items:center;padding:5px 0 calc(5px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.1);z-index:900}
+    .bottom-nav-item{display:flex;flex-direction:column;align-items:center;color:var(--text-light);text-decoration:none;font-size:.75rem;padding:5px 0}
+    .bottom-nav-item i{font-size:1.4rem;margin-bottom:4px}
+    .bottom-nav-item.active{color:var(--primary-glow)}
+    .bet-slip-button{width:60px;height:60px;background:linear-gradient(45deg,var(--primary-glow),var(--secondary-glow));color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:translateY(-25px);border:4px solid var(--bg-dark);box-shadow:0 0 20px rgba(0,170,255,.5)}
+    .bet-slip-button i{font-size:1.8rem}
+    .game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+    .game-card{background:var(--bg-card);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--text-white);border:1px solid rgba(255,255,255,.1);transition:transform .3s,box-shadow .3s}
+    .game-card:hover{transform:translateY(-5px);box-shadow:0 10px 20px rgba(0,0,0,.2),0 0 15px var(--primary-glow)}
+    .game-card img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;display:block}
+    .game-card-info{padding:12px;display:flex;justify-content:space-between;align-items:center}
+    .game-card-title{font-weight:600;font-size:1rem}
+    .play-btn{background:var(--primary-glow);color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+    .play-btn i{margin-left:2px}
+    #menu-page,#security-details-page,#withdraw-page,#profile-page,#history-page{position:fixed;inset:0;background:#f0f2f5;color:#1a202c;z-index:1001;transform:translateX(100%);transition:transform .4s ease-in-out;overflow-y:auto}
+    #menu-page.active,#security-details-page.active,#withdraw-page.active,#profile-page.active,#history-page.active{transform:translateX(0)}
+    .menu-header{background:#fff;padding:15px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,.05)}
+    .menu-header .back-btn i,.menu-header .profile-btn i{font-size:1.5rem;color:#0d6efd}
+    .menu-header h2{font-size:1.2rem;font-weight:600;color:#0d6efd}
+    .settings-content{padding:20px 15px}
+    .settings-section-title{font-size:.9rem;font-weight:500;color:#718096;margin-bottom:10px;text-transform:capitalize}
+    .settings-card{background:#fff;border-radius:12px;margin-bottom:20px;overflow:hidden}
+    .menu-item{display:flex;align-items:center;padding:15px;border-bottom:1px solid #f0f2f5;cursor:pointer}
+    .menu-item.locked{opacity:.7;cursor:not-allowed}
+    .settings-card .menu-item:last-child{border-bottom:none}
+    .menu-item .icon-wrapper{width:40px;height:40px;border-radius:50%;background:#eaf2ff;display:flex;align-items:center;justify-content:center;margin-right:15px}
+    .menu-item .icon-wrapper i{color:#0d6efd;font-size:1.1rem}
+    .menu-item .text-wrapper{flex-grow:1}
+    .menu-item .text-wrapper span{font-weight:500;font-size:1rem}
+    .menu-item .text-wrapper small{display:block;font-size:.8rem;margin-top:2px}
+    .status-protected{color:#28a745}.status-disabled{color:#dc3545}
+    .status-protected i,.status-disabled i{margin-right:4px}
+    .logout-item .icon-wrapper{background:rgba(225,29,72,.1)}
+    .logout-item .icon-wrapper i,.logout-item .text-wrapper span{color:var(--danger)}
+    .sec-details-content{padding:20px 15px}
+    .sec-details-content .input-group{margin-bottom:20px}
+    .sec-details-content label{display:block;margin-bottom:8px;font-size:.9rem;color:#555;font-weight:500}
+    .sec-details-content input,.sec-details-content select{width:100%;background:#fff;border:1px solid #ddd;color:#333;padding:14px;border-radius:8px;font-size:1rem;font-family:'Poppins',sans-serif}
+    .sec-details-content button[type=submit]{width:100%;padding:15px;background:#0d6efd;color:#fff;border:none;border-radius:8px;font-size:1.1rem;font-weight:600;margin-top:20px;cursor:pointer}
+    .withdraw-content{padding:20px 15px}
+    .withdraw-section-title{font-size:.9rem;font-weight:500;color:#718096;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+    .payment-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:25px}
+    .payment-method-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;text-decoration:none;color:#333;transition:all .2s ease}
+    .payment-method-card:hover{transform:translateY(-3px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+    .payment-icon-wrapper{display:flex;align-items:center;justify-content:center;height:40px;margin-bottom:10px;position:relative}
+    .payment-icon-wrapper i{font-size:2rem}
+    .payment-icon-wrapper .fa-bitcoin{color:#f7931a}
+    .payment-icon-wrapper .fa-ethereum{color:#627eea}
+    .payment-icon-wrapper .fa-dogecoin{color:#c2a633}
+    .icon-text{font-weight:700;font-size:1.8rem}
+    .icon-litecoin{color:#345d9d}
+    .icon-tron{color:#eb0029}
+    .icon-xrp{color:#00aae4}
+    .icon-bsc{font-size:1.5rem;color:#f0b90b}
+    .payment-icon-wrapper .icon-overlay{font-size:1rem;position:absolute;bottom:-2px;right:-5px;background:#fff;border-radius:50%;padding:2px;box-shadow:0 0 5px rgba(0,0,0,.1)}
+    .payment-method-card span{font-size:.85rem;font-weight:500}
+    #fg-cash-card .fg-logo{font-size:1.8rem;font-weight:700;text-shadow:0 0 5px var(--primary-glow);color:#111}
+    #withdrawal-requests-section{display:none;margin-bottom:20px;background-color:#e9f7ef;border-radius:8px}
+    #withdrawal-requests-header{background-color:#28a745;color:#fff;padding:12px 15px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+    #withdrawal-requests-header .refresh-btn{background:rgba(255,255,255,.2);border:none;border-radius:6px;color:#fff;padding:5px 8px;font-size:.8rem}
+    #withdrawal-requests-header .toggle-icon{transition:transform .3s}
+    #withdrawal-requests-header.collapsed .toggle-icon{transform:rotate(-180deg)}
+    #withdrawal-requests-body{padding:15px;max-height:300px;overflow-y:auto;display:block}
+    #withdrawal-requests-header.collapsed + #withdrawal-requests-body{display:none}
+    .request-item{background:#fff;border-radius:8px;padding:12px;margin-bottom:10px;color:#333}
+    .request-item .row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:.9rem}
+    .request-item .label{color:#555}
+    .request-item .value{font-weight:600}
+    .status{padding:3px 8px;border-radius:12px;font-size:.8rem;font-weight:600;cursor:pointer}
+    .status.review{background:#fff3cd;color:#856404}
+    .status.approved{background:#d4edda;color:#155724}
+    .status.rejected{background:#f8d7da;color:#721c24}
+    .request-actions{margin-top:10px;text-align:right}
+    .cancel-btn{background:var(--danger);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:.8rem}
+    .profile-content{padding:20px 15px}
+    .profile-action-card{background:#fff;border-radius:12px;padding:15px;display:flex;align-items:center;gap:15px;font-size:1.1rem;font-weight:500;margin-bottom:25px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05);color:#0d6efd}
+    .profile-action-card i{color:#0d6efd;font-size:1.2rem}
+    .profile-section-title{font-size:.9rem;font-weight:500;color:#718096;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;padding-left:5px}
+    .profile-card{background:#fff;border-radius:12px;margin-bottom:20px;overflow:hidden}
+    .profile-item{display:flex;justify-content:space-between;align-items:center;padding:16px 15px;border-bottom:1px solid #f0f2f5}
+    .profile-card .profile-item:last-child{border-bottom:none}
+    .profile-item .label{color:#333;font-size:1rem}
+    .profile-item .value{color:#555;font-weight:500;text-align:right}
+    .profile-item .action-link{color:#0d6efd;font-weight:500;text-decoration:none}
+    #crash-game,#dice-game{position:fixed;inset:0;z-index:1100;transform:translateX(100%);transition:transform .35s ease;display:flex;flex-direction:column;height:100vh}
+    #crash-game.active,#dice-game.active{transform:translateX(0)}
+    #crash-game{background:var(--aviator-bg);overflow-y:auto}
+    .game-floating-controls{position:absolute;top:0;left:0;right:0;padding:calc(15px + env(safe-area-inset-top)) 15px 15px;display:flex;justify-content:space-between;align-items:center;z-index:1110;pointer-events:none}
+    .game-floating-controls > *{pointer-events:auto}
+    .game-back-btn{background:rgba(40,40,40,.7);border:1px solid rgba(255,255,255,.1);border-radius:12px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;cursor:pointer;padding:0;transition:background-color .2s;backdrop-filter:blur(5px)}
+    .game-balance-btn{background:rgba(40,40,40,.7);border:1px solid rgba(255,255,255,.1);padding:8px 15px;border-radius:20px;font-weight:600;color:#fff;backdrop-filter:blur(5px)}
+    #crash-game-content{padding-top:80px;display:flex;flex-direction:column;flex-grow:1;min-height:100%}
+    .crash-history-bar{padding:8px 12px;background:#161922;display:flex;overflow-x:auto;gap:8px;scrollbar-width:none;flex-shrink:0}
+    .crash-history-bar::-webkit-scrollbar{display:none}
+    .hx{padding:4px 8px;border-radius:6px;font-size:.85rem;font-weight:600;cursor:pointer}
+    .hx.low{color:#6da5f5}.hx.mid{color:#c66df5}.hx.high{color:#f56da2}.hx.epic{color:#ffc400;text-shadow:0 0 5px var(--aviator-yellow)}
+    .crash-stage{position:relative;margin:10px;min-height:280px;border-radius:12px;background:#15121e;background-image:repeating-radial-gradient(circle at 0 100%,transparent 0,#15121e 40px),repeating-linear-gradient(#1c1827,#1c1827);overflow:hidden;flex-grow:1}
+    .crash-canvas{width:100%;height:100%;display:block;background:transparent}
+    .crash-multiplier{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:4.5rem;font-weight:700;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.5)}
+    .crash-status{position:absolute;left:50%;top:calc(50% + 40px);transform:translateX(-50%);font-size:1.1rem;font-weight:600;color:var(--aviator-red);text-shadow:0 0 10px #000;letter-spacing:1px}
+    .player-counter{position:absolute;bottom:15px;right:15px;background:rgba(0,0,0,.5);border-radius:20px;padding:6px 12px;display:flex;align-items:center;gap:8px;backdrop-filter:blur(3px)}
+    .avatars{display:flex}
+    .avatars img{width:24px;height:24px;border-radius:50%;border:2px solid #fff;margin-left:-10px}
+    .avatars img:first-child{margin-left:0}
+    #player-count-num{font-weight:600;font-size:.9rem}
+    #aviator-jet{position:absolute;left:0;top:0;transform:translate(-9999px,-9999px);width:50px;height:auto;filter:drop-shadow(0 0 8px rgba(248,49,101,.7));transition:opacity .3s}
+    #aviator-jet.exploded{animation:explode .4s ease-out forwards}
+    @keyframes explode{0%{transform:scale(1) rotate(0);opacity:1}100%{transform:scale(3) rotate(15deg);opacity:0}}
+    .bet-panels{padding:5px 10px 10px;display:grid;grid-template-columns:1fr;gap:8px;flex-shrink:0}
+    @media (min-width:720px){.bet-panels{grid-template-columns:1fr 1fr}}
+    .bet-card{background:var(--aviator-card-bg);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px}
+    .bet-tabs{display:flex;gap:10px;margin-bottom:10px}
+    .tab-btn{background:transparent;border:0;color:var(--aviator-text-muted);font-size:1rem;font-weight:600;padding:5px}
+    .tab-btn.active{color:#fff}
+    .bet-controls{display:grid;grid-template-columns:1fr 140px;gap:10px;align-items:flex-start}
+    .bet-left{display:flex;flex-direction:column;gap:8px}
+    .amount-control{display:flex;align-items:center;background:#151821;border-radius:8px}
+    .amount-control button{background:transparent;border:0;color:var(--aviator-text-muted);font-size:1.5rem;width:40px;height:40px}
+    .amount-control input{width:100%;background:transparent;border:0;color:#fff;text-align:center;font-size:1.2rem;font-weight:600;padding:0 5px;-moz-appearance:textfield}
+    .amount-control input::-webkit-outer-spin-button,.amount-control input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+    .chip-row{display:flex;flex-wrap:wrap;gap:6px}
+    .chip{background:#151821;border:1px solid rgba(255,255,.1);color:var(--text-light);padding:5px 8px;border-radius:8px;font-size:.85rem}
+    .action-btn{border:none;color:#fff;font-weight:700;font-size:1rem;border-radius:8px;padding:10px;text-align:center;transition:background-color .2s;min-height:60px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+    .action-btn[data-state=bet]{background-color:var(--aviator-green)}
+    .action-btn[data-state=wait]{background-color:var(--aviator-yellow);color:#111}
+    .action-btn[data-state=cashout]{background-color:var(--aviator-red)}
+    .action-btn[data-state=disabled]{background-color:#555;opacity:.7;pointer-events:none}
+    .action-btn .bet-amount{font-size:1.1rem;font-weight:800}
+    .muted{color:var(--aviator-text-muted);font-size:.85rem;text-align:center;margin-top:5px}
+    #dice-game{background:#10141f;font-family:'Poppins',sans-serif}
+    .dice-game-area{flex-grow:1;display:flex;flex-direction:column;justify-content:space-evenly;align-items:center;padding:80px 20px 20px;background-image:url('https://image.pollinations.ai/prompt/dark%20blue%20background%20with%20faintly%20visible%20casino%20dice%20floating%20in%20the%20distance,%20atmospheric,%20blurry?width=1080&height=1920&nologo=true');background-size:cover}
+    .dice-stage{display:flex;gap:20px;margin-bottom:20px;perspective:1000px}
+    .dice-container{width:100px;height:100px;position:relative;transform-style:preserve-3d}
+    .dice-container.rolling{animation:roll 1s ease-out}
+    .dice{width:100%;height:100%;position:absolute;transform-style:preserve-3d;transition:transform 1s}
+    .face{position:absolute;width:100px;height:100px;background:#fff;border:2px solid #ddd;border-radius:10px;display:flex;justify-content:center;align-items:center;font-size:40px;color:#111}
+    .front{transform:translateZ(50px)}
+    .back{transform:rotateY(180deg) translateZ(50px)}
+    .right{transform:rotateY(90deg) translateZ(50px)}
+    .left{transform:rotateY(-90deg) translateZ(50px)}
+    .top{transform:rotateX(90deg) translateZ(50px)}
+    .bottom{transform:rotateX(-90deg) translateZ(50px)}
+    .dot{display:block;width:20px;height:20px;border-radius:50%;background:#111}
+    .face{display:grid;padding:10px}
+    .f1{grid-template-areas:". . ." ". a ." ". . ."}
+    .f1 .dot{grid-area:a}
+    .f2{grid-template-areas:"a . ." ". . ." ". . b"}
+    .f2 .dot:nth-of-type(1){grid-area:a}
+    .f2 .dot:nth-of-type(2){grid-area:b}
+    .f3{grid-template-areas:"a . ." ". b ." ". . c"}
+    .f3 .dot:nth-of-type(1){grid-area:a}
+    .f3 .dot:nth-of-type(2){grid-area:b}
+    .f3 .dot:nth-of-type(3){grid-area:c}
+    .f4{grid-template-areas:"a . b" ". . ." "c . d"}
+    .f4 .dot:nth-of-type(1){grid-area:a}
+    .f4 .dot:nth-of-type(2){grid-area:b}
+    .f4 .dot:nth-of-type(3){grid-area:c}
+    .f4 .dot:nth-of-type(4){grid-area:d}
+    .f5{grid-template-areas:"a . b" ". c ." "d . e"}
+    .f5 .dot:nth-of-type(1){grid-area:a}
+    .f5 .dot:nth-of-type(2){grid-area:b}
+    .f5 .dot:nth-of-type(3){grid-area:c}
+    .f5 .dot:nth-of-type(4){grid-area:d}
+    .f5 .dot:nth-of-type(5){grid-area:e}
+    .f6{grid-template-areas:"a . b" "c . d" "e . f"}
+    .f6 .dot:nth-of-type(1){grid-area:a}
+    .f6 .dot:nth-of-type(2){grid-area:b}
+    .f6 .dot:nth-of-type(3){grid-area:c}
+    .f6 .dot:nth-of-type(4){grid-area:d}
+    .f6 .dot:nth-of-type(5){grid-area:e}
+    .f6 .dot:nth-of-type(6){grid-area:f}
+    .dice-result-display{color:#fff;font-size:1.5rem;font-weight:600;min-height:2.5rem;text-align:center;margin-bottom:20px}
+    .dice-result-display.win{color:var(--aviator-green)}
+    .dice-result-display.lose{color:var(--aviator-red)}
+    .dice-controls{background:rgba(0,0,0,.3);border-radius:12px;padding:20px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:15px}
+    .dice-odds-selector{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    .dice-odd-btn{background:#4a4d62;border:2px solid #6b6f8a;border-radius:8px;padding:10px;text-align:center;color:#fff;cursor:pointer;transition:all .2s}
+    .dice-odd-btn.active{background:var(--primary-glow);border-color:#fff;box-shadow:0 0 10px var(--primary-glow)}
+    .dice-odd-btn span{display:block}
+    .dice-odd-btn .odd-val{font-weight:700}
+    .dice-bet-adjust{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .dice-adjust-btn{background:#c39a4c;border:none;border-radius:8px;color:#fff;font-weight:700;padding:12px;font-size:1rem;box-shadow:inset 0 -3px 0 rgba(0,0,0,.3)}
+    #dice-bet-amount-display{background:#202534;border-radius:8px;padding:12px;text-align:center;font-size:1.2rem;font-weight:700}
+    .dice-action-buttons{display:grid;grid-template-columns:1fr 2fr 1fr;gap:10px}
+    .dice-action-btn{border:none;border-radius:8px;font-size:1.5rem;padding:12px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.3);transition:transform .1s}
+    .dice-action-btn:active{transform:translateY(2px);box-shadow:none}
+    #dice-cash-btn{background:#394a8c;color:#fff}
+    #dice-play-btn{background:#4caf50;color:#fff}
+    #dice-auto-btn{background:#607d8b;color:#fff}
+    @keyframes roll{0%{transform:rotateY(0) rotateX(0) rotateZ(0)}100%{transform:rotateY(720deg) rotateX(720deg) rotateZ(720deg)}}
+    #search-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);z-index:9998;display:none;align-items:flex-start;justify-content:center;padding-top:80px}
+    .search-modal-content{width:100%;max-width:400px;padding:0 20px}
+    #game-search-input{width:100%;background:var(--bg-card);border:1px solid rgba(255,255,255,.2);color:var(--text-white);padding:15px;border-radius:12px;font-size:1.1rem}
+    #custom-alert-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);z-index:10000;display:none;align-items:center;justify-content:center;padding:20px}
+    .custom-alert-box{background:#fff;color:#333;padding:25px;border-radius:16px;width:100%;max-width:320px;text-align:center;animation:zoomIn .3s ease-out}
+    .custom-alert-box h3{font-size:1.4rem;margin-bottom:15px}
+    .custom-alert-box p{font-size:1rem;margin-bottom:25px;line-height:1.5}
+    .custom-alert-box button{width:100%;padding:12px;background:#0d6efd;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+    
+    /* Transaction History Styles */
+    #history-list-container { padding: 10px; }
+    .history-group { margin-bottom: 20px; }
+    .history-date { font-weight: 600; color: #555; margin-bottom: 10px; padding-left: 5px; }
+    .history-item { display: flex; align-items: center; background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .history-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1rem; color: #fff;}
+    .history-icon.deposit { background-color: var(--success-color); }
+    .history-icon.withdrawal-req { background-color: var(--danger); }
+    .history-details { flex-grow: 1; display: flex; justify-content: space-between; align-items: center; }
+    .history-text-col { display: flex; flex-direction: column; }
+    .history-time { font-size: 0.9rem; color: #777; }
+    .history-desc { font-size: 0.95rem; color: #333; }
+    .history-amount { font-weight: 600; font-size: 1rem; }
+    .history-amount.credit { color: var(--success-color); }
+    .history-amount.debit { color: var(--danger); }
+    
+    /* NEW: Sign-in History Styles */
+    #signin-history-page {
+        position: fixed; inset: 0; background: #f0f2f5; color: #1a202c; z-index: 1002;
+        transform: translateX(100%); transition: transform .4s ease-in-out; overflow-y: auto;
+    }
+    #signin-history-page.active { transform: translateX(0); }
+    .session-item {
+        display: flex; align-items: center; background: #fff; border-radius: 12px;
+        padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .session-icon { font-size: 1.5rem; color: #555; width: 40px; text-align: center; }
+    .session-details { flex-grow: 1; margin-left: 15px; }
+    .session-details p { font-weight: 500; font-size: 0.95rem; }
+    .session-details small { color: #777; font-size: 0.8rem; }
+    .session-current { color: var(--success-color); font-weight: 600; font-size: 0.8rem; }
+    .revoke-session-btn {
+        background: transparent; border: none; font-size: 1.2rem; color: var(--danger);
+        cursor: pointer; padding: 5px 10px;
+    }
+    .revoke-session-btn:disabled { color: #aaa; }
+    .fa-spinner { animation: spin 1s linear infinite; }
+  </style>
+</head>
+<body>
+  <div id="preloader" aria-hidden="true"><h1 class="loader-text">FG BET</h1><div class="spinner" aria-hidden="true"></div></div>
+  <div id="auth-screen"><div class="auth-container"><div class="auth-logo-area"><h1 class="auth-logo">FGBET</h1><div class="auth-welcome"><h2>Welcome</h2><p>to the Future of Gaming</p></div></div><div class="auth-actions"><button id="login-btn" class="auth-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</button><button id="register-btn" class="auth-btn"><i class="fa-solid fa-user-plus"></i> Register</button></div></div></div>
+  <div id="main-content"><header class="top-header"><button class="balance-btn"><i class="fa-solid fa-wallet"></i> 0 Re</button><div class="header-logo">FGBET</div><button class="icon-btn header-search" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button></header><nav class="main-nav" aria-label="Primary"><a href="#" id="sports-nav-link" class="nav-item">Sports</a><a href="#" id="casino-nav-link" class="nav-item active">Casino</a><a href="#" id="games-nav-link" class="nav-item">Games</a></nav><main class="content-padding"><h2 class="section-title">Popular Games</h2><div class="game-grid"><a href="#" id="open-crash-btn" class="game-card"><img src="https://image.pollinations.ai/prompt/Futuristic%20red%20glowing%20jet%20flying%20horizontally%20on%20a%20dark%20space%20background%2C%20dynamic%20angle%2C%20game%20art?width=800&height=600&nologo=true" alt="Stylized red jet game art" loading="lazy" decoding="async" width="800" height="600" /><div class="game-card-info"><span class="game-card-title">Aviator</span><span class="play-btn"><i class="fa-solid fa-play"></i></span></div></a><a href="#" id="open-dice-btn" class="game-card"><img src="https://image.pollinations.ai/prompt/Photorealistic%20close-up%20of%20two%20casino%20dice%20on%20dark%20felt%20table%2C%20dramatic%20side%20lighting%2C%20shallow%20depth%20of%20field%2C%20high%20detail%2C%20macro?width=800&height=600&nologo=true" alt="AI-generated photorealistic dice" loading="lazy" decoding="async" width="800" height="600" /><div class="game-card-info"><span class="game-card-title">Dice</span><span class="play-btn"><i class="fa-solid fa-play"></i></span></div></a></div></main><nav class="bottom-nav" aria-label="Secondary"><a href="#" class="bottom-nav-item active"><i class="fa-solid fa-house"></i> <span>Home</span></a><a href="#" class="bottom-nav-item"><i class="fa-solid fa-gift"></i> <span>Promos</span></a><a href="#" class="bet-slip-button" aria-label="Open bet slip"><i class="fa-solid fa-ticket"></i></a><a href="#" class="bottom-nav-item" id="open-history-menu-btn"><i class="fa-solid fa-clock-rotate-left"></i> <span>History</span></a><a href="#" class="bottom-nav-item" id="open-menu-btn"><i class="fa-solid fa-bars"></i> <span>Menu</span></a></nav></div>
+  <div id="menu-page" role="dialog" aria-modal="true" aria-labelledby="settings-title"><header class="menu-header"><button class="back-btn" id="close-menu-btn" aria-label="Close settings"><i class="fa-solid fa-arrow-left"></i></button><h2 id="settings-title">Settings</h2><button class="profile-btn" id="open-profile-btn" aria-label="Profile"><i class="fa-solid fa-user-circle"></i></button></header><main class="settings-content"><h3 class="settings-section-title">Account management</h3><div class="settings-card"><div class="menu-item" id="history-menu-item"><div class="icon-wrapper"><i class="fa-solid fa-list-check"></i></div><div class="text-wrapper"><span>Transaction History</span></div></div><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-wallet"></i></div><div class="text-wrapper"><span>Make a deposit</span></div></div><div class="menu-item" id="withdraw-menu-item"><div class="icon-wrapper"><i class="fa-solid fa-money-bill-transfer"></i></div><div class="text-wrapper"><span>Withdraw</span></div></div></div><h3 class="settings-section-title">Security</h3><div class="settings-card"><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-fingerprint"></i></div><div class="text-wrapper"><span>PIN code and biometrics</span></div></div><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-shield-halved"></i></div><div class="text-wrapper"><span>Authenticator</span><small class="status-disabled"><i class="fa-solid fa-circle-xmark"></i> Not enabled</small></div></div><div class="menu-item" id="security-settings-item"><div class="icon-wrapper"><i class="fa-solid fa-lock"></i></div><div class="text-wrapper"><span>Security settings</span><small class="status-disabled"><i class="fa-solid fa-circle-xmark"></i> Not enabled</small></div></div><div class="menu-item" id="signin-history-item"><div class="icon-wrapper"><i class="fa-solid fa-desktop"></i></div><div class="text-wrapper"><span>Sign-in history</span></div></div></div><h3 class="settings-section-title">Bet settings</h3><div class="settings-card"><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-dollar-sign"></i></div><div class="text-wrapper"><span>Bet settings</span></div></div><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-hand-pointer"></i></div><div class="text-wrapper"><span>One-click bet</span></div></div></div><div class="settings-card"><a href="#" id="logout-btn-menu" class="menu-item logout-item"><div class="icon-wrapper"><i class="fa-solid fa-right-from-bracket"></i></div><div class="text-wrapper"><span>Log Out</span></div></a></div></main></div>
+  <div id="profile-page"><header class="menu-header"><button class="back-btn" id="close-profile-page-btn" aria-label="Back to Settings"><i class="fa-solid fa-arrow-left"></i></button><h2>Personal profile</h2><div style="width: 40px;"></div></header><main class="profile-content"><div class="profile-action-card" id="profile-enter-details-btn"><i class="fa-solid fa-pencil"></i> <span>Enter details</span></div><h3 class="profile-section-title">Account</h3><div class="profile-card"><div class="profile-item"><span class="label">Account number</span><span class="value" id="profile-account-id"></span></div><div class="profile-item"><span class="label">Password</span><span class="value" id="profile-password"></span></div><div class="profile-item"><span class="label">Registration date</span><span class="value" id="profile-reg-date"></span></div></div><h3 class="profile-section-title">Personal information</h3><div class="profile-card"><div class="profile-item"><span class="label">Name</span><span class="value" id="profile-name"></span></div><div class="profile-item"><span class="label">Surname</span><span class="value" id="profile-surname"></span></div><div class="profile-item"><span class="label">Country</span><span class="value" id="profile-country"></span></div><div class="profile-item"><span class="label">City</span><span class="value" id="profile-city"></span></div></div></main></div>
+  <div id="crash-game" aria-hidden="true"><div class="game-floating-controls"><button class="game-back-btn" id="close-crash-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><button class="game-balance-btn balance-btn">0 Re</button></div><div id="crash-game-content"><div id="crash-history" class="crash-history-bar"></div><div class="crash-stage"><canvas id="crash-canvas" class="crash-canvas"></canvas><div class="player-counter"><div class="avatars"><img src="https://picsum.photos/40/40?random=1" alt="player avatar"><img src="https://picsum.photos/40/40?random=2" alt="player avatar"><img src="https://picsum.photos/40/40?random=3" alt="player avatar"></div><span id="player-count-num">3,451</span></div><svg id="aviator-jet" viewBox="0 0 133 134" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M57.9992 0.333008L43.8325 35.833H19.6659L2.16587 53.333L0.33252 65.833L21.4992 58.333L40.3325 77.1663L31.4992 133.166L43.8325 120.833L54.4992 84.333L79.1659 108.999L91.4992 96.6663L66.8325 71.9997L103.333 61.333L119.666 44.9997L132.166 42.4997L124.666 21.333L77.1659 40.1663L57.9992 0.333008Z" fill="#f83165"/></svg><div id="crash-status" class="crash-status">WAITING FOR NEXT ROUND</div><div id="crash-multiplier" class="crash-multiplier">1.00x</div></div><div class="bet-panels"><div class="bet-card" id="betbox-1"><div class="bet-tabs"><button class="tab-btn active">Bet</button><button class="tab-btn">Auto</button></div><div class="bet-controls"><div class="bet-left"><div class="amount-control"><button data-action="minus" aria-label="Decrease bet">-</button><input type="number" step="10" min="50" value="50.00" data-field="amount" aria-label="Bet amount" /><button data-action="plus" aria-label="Increase bet">+</button></div><div class="chip-row" data-quick><button class="chip" data-add="100">100</button><button class="chip" data-add="200">200</button><button class="chip" data-add="500">500</button><button class="chip" data-add="1000">1000</button></div></div><button class="action-btn" data-action="main" data-state="bet"><span>BET</span><span class="bet-amount" data-amount-display>50.00 Re</span></button></div><div class="muted" data-info>Place your bet for the next round</div></div><div class="bet-card" id="betbox-2"><div class="bet-tabs"><button class="tab-btn active">Bet</button><button class="tab-btn">Auto</button></div><div class="bet-controls"><div class="bet-left"><div class="amount-control"><button data-action="minus" aria-label="Decrease bet">-</button><input type="number" step="10" min="50" value="50.00" data-field="amount" aria-label="Bet amount" /><button data-action="plus" aria-label="Increase bet">+</button></div><div class="chip-row" data-quick><button class="chip" data-add="100">100</button><button class="chip" data-add="200">200</button><button class="chip" data-add="500">500</button><button class="chip" data-add="1000">1000</button></div></div><button class="action-btn" data-action="main" data-state="bet"><span>BET</span><span class="bet-amount" data-amount-display>50.00 Re</span></button></div><div class="muted" data-info>Place your bet for the next round</div></div></div></div></div>
+  <div id="dice-game"><div class="game-floating-controls"><button class="game-back-btn" id="close-dice-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><button class="game-balance-btn balance-btn">0 Re</button></div><main class="dice-game-area"><div class="dice-stage"><div id="dice-container-1" class="dice-container"><div class="dice" id="dice-1"><div class="face front  f1"><span class="dot"></span></div><div class="face back   f6"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face right  f3"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face left   f4"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face top    f2"><span class="dot"></span><span class="dot"></span></div><div class="face bottom f5"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div></div><div id="dice-container-2" class="dice-container"><div class="dice" id="dice-2"><div class="face front  f1"><span class="dot"></span></div><div class="face back   f6"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face right  f3"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face left   f4"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face top    f2"><span class="dot"></span><span class="dot"></span></div><div class="face bottom f5"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div></div></div><p id="dice-result-display"></p><div class="dice-controls"><div class="dice-odds-selector"><button class="dice-odd-btn" data-bet="under"><span>Under 7</span><span class="odd-val">x 2.3</span></button><button class="dice-odd-btn" data-bet="equal"><span>Equal 7</span><span class="odd-val">x 5.8</span></button><button class="dice-odd-btn" data-bet="over"><span>Over 7</span><span class="odd-val">x 2.3</span></button></div><div class="dice-bet-adjust"><button id="dice-min-btn" class="dice-adjust-btn">MIN</button><button id="dice-double-btn" class="dice-adjust-btn">X2</button><button id="dice-half-btn" class="dice-adjust-btn">X/2</button><button id="dice-max-btn" class="dice-adjust-btn">MAX</button></div><div id="dice-bet-amount-display">100.00</div><div class="dice-action-buttons"><button id="dice-cash-btn" class="dice-action-btn"><i class="fa-solid fa-coins"></i></button><button id="dice-play-btn" class="dice-action-btn"><i class="fa-solid fa-play"></i></button><button id="dice-auto-btn" class="dice-action-btn"><i class="fa-solid fa-sync"></i></button></div></div></main></div>
+  <div id="search-modal-overlay"><div class="search-modal-content"><input type="search" id="game-search-input" placeholder="Search games..."></div></div>
+  <div id="reg-success-modal"><div class="reg-icon"><i class="fa-solid fa-check"></i></div><h2 class="reg-title">Registration successful!</h2><div class="reg-details"><div class="reg-detail-item"><span>Username:</span><span id="reg-username"></span></div><div class="reg-detail-item"><span>Password:</span><span id="reg-password"></span></div></div><div class="reg-actions"><button class="reg-action-btn" id="reg-copy-btn"><i class="fa-regular fa-copy"></i> Copy</button><button class="reg-action-btn" id="reg-share-btn"><i class="fa-solid fa-share-nodes"></i> Share</button></div><button id="reg-next-btn">Next</button></div>
+  <div id="login-modal" class="modal-overlay"><div class="modal-content"><button id="close-login-modal" class="close-modal-btn" aria-label="Close">&times;</button><h2>Login</h2><form id="login-form"><div class="input-group"><input type="text" id="login-id-input" placeholder="Username / ID" required></div><div class="input-group"><input type="password" id="login-pw-input" placeholder="Password" required></div><p id="login-error-msg"></p><button type="submit" id="login-submit-btn">Login</button></form></div></div>
+  <div id="country-modal" class="modal-overlay"><div class="modal-content"><button id="close-country-modal" class="close-modal-btn" aria-label="Close">&times;</button><h2>Select Your Country</h2><div class="input-group"><input type="search" id="country-search-input" placeholder="Search for a country..."></div><div id="country-list"></div></div></div>
+  <div id="security-details-page"><header class="menu-header"><button class="back-btn" id="close-security-page-btn" aria-label="Back to Settings"><i class="fa-solid fa-arrow-left"></i></button><h2>Security Details</h2><div style="width: 40px;"></div></header><main class="sec-details-content"><form id="security-details-form"><div class="input-group"><label for="sec-fullname">Full Name</label><input type="text" id="sec-fullname" required></div><div class="input-group"><label for="sec-surname">Surname</label><input type="text" id="sec-surname" required></div><div class="input-group"><label for="sec-nic">NIC Number</label><input type="text" id="sec-nic" required></div><div class="input-group"><label for="sec-address">Home Address</label><input type="text" id="sec-address" required></div><div class="input-group"><label for="sec-province">Province (පළාත)</label><select id="sec-province" required><option value="">-- Select Province --</option><option>Western Province (බස්නාහිර පළාත)</option><option>Central Province (මධ්‍යම පළාත)</option><option>Southern Province (දකුණු පළාත)</option><option>Northern Province (උතුරු පළාත)</option><option>Eastern Province (නැගෙනහිර පළාත)</option><option>North Western Province (වයඹ පළාත)</option><option>North Central Province (උතුරු මැද පළාත)</option><option>Uva Province (ඌව පළාත)</option><option>Sabaragamuwa Province (සබරගමුව පළාත)</option></select></div><div class="input-group"><label for="sec-district">District (දිස්ත්‍රික්කය)</label><select id="sec-district" required><option value="">-- Select District --</option><option>Colombo</option><option>Gampaha</option><option>Kalutara</option><option>Kandy</option><option>Matale</option><option>Nuwara Eliya</option><option>Galle</option><option>Matara</option><option>Hambantota</option><option>Jaffna</option><option>Kilinochchi</option><option>Mannar</option><option>Vavuniya</option><option>Mullaitivu</option><option>Batticaloa</option><option>Ampara</option><option>Trincomalee</option><option>Kurunegala</option><option>Puttalam</option><option>Anurapura</option><option>Polonnaruwa</option><option>Badulla</option><option>Monaragala</option><option>Ratnapura</option><option>Kegalle</option></select></div><button type="submit">Save Details</button></form></main></div>
+  <div id="withdraw-page"><header class="menu-header"><button class="back-btn" id="close-withdraw-page-btn" aria-label="Back to Settings"><i class="fa-solid fa-arrow-left"></i></button><h2>Withdraw Funds</h2><div style="width: 40px;"></div></header><main class="withdraw-content"><div id="withdrawal-requests-section"><div id="withdrawal-requests-header" class="collapsed"><span>Withdrawal requests</span><div><button class="refresh-btn"><i class="fa-solid fa-sync"></i> REFRESH</button><i class="fa-solid fa-chevron-up toggle-icon"></i></div></div><div id="withdrawal-requests-body"></div></div><h3 class="withdraw-section-title">CASH</h3><div class="payment-grid"><a href="#" class="payment-method-card" id="fg-cash-card"><div class="payment-icon-wrapper"><div class="fg-logo">FGBET</div></div><span>FG Cash</span></a></div><h3 class="withdraw-section-title">CRYPTOCURRENCY</h3><div class="payment-grid"><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text" style="color: #26A17B;">T</span><i class="fa-brands fa-gg-circle icon-overlay" style="color: #7B3FE4;"></i></div><span>Tether on POL</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text" style="color: #26A17B;">T</span><i class="fa-brands fa-telegram icon-overlay" style="color: #0088cc;"></i></div><span>Tether on TON</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text" style="color: #26A17B;">T</span><span class="icon-tron icon-overlay">TRX</span></div><span>Tether on Tron</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text" style="color: #26A17B;">T</span><span class="icon-bsc icon-overlay">BNB</span></div><span>Tether on BSC</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><i class="fa-brands fa-ethereum"></i></div><span>Tether on Ethereum</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text icon-tron">TRX</span></div><span>TRON</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><i class="fa-brands fa-bitcoin"></i></div><span>Bitcoin</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text icon-litecoin">Ł</span></div><span>Litecoin</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><i class="fa-brands fa-ethereum"></i></div><span>Ethereum</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text icon-bsc">BNB</span></div><span>Binance Coin BSC</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><i class="fa-brands fa-dogecoin"></i></div><span>Dogecoin</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text icon-xrp">XRP</span></div><span>XRP</span></a></div></main></div>
+  <div id="withdraw-modal" class="modal-overlay"><div class="modal-content"><button id="close-withdraw-modal" class="close-modal-btn" aria-label="Close">&times;</button><h2>Withdraw Funds</h2><form id="withdraw-form"><div class="input-group"><label>Amount (Min. 250.00)</label><input type="number" id="withdraw-amount" value="250" min="250" required></div><div class="input-group"><label>City</label><select id="withdraw-city" required><option>Welimada</option></select></div><div class="input-group"><label>Street</label><select id="withdraw-street" required><option>Steve Earning 24/7</option></select></div><button type="submit" id="withdraw-confirm-btn">Confirm</button></form></div></div>
+  <div id="custom-alert-overlay"><div class="custom-alert-box"><h3 id="custom-alert-title"></h3><p id="custom-alert-message"></p><button id="custom-alert-ok-btn">OK</button></div></div>
+  
+  <div id="history-page">
+    <header class="menu-header">
+      <button class="back-btn" id="close-history-page-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2>Transaction History</h2>
+      <div style="width: 40px;"></div>
+    </header>
+    <main id="history-list-container" class="settings-content"></main>
+  </div>
+
+  <!-- NEW: Sign-in History Page -->
+  <div id="signin-history-page">
+    <header class="menu-header">
+      <button class="back-btn" id="close-signin-history-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2>Sign-in History</h2>
+      <div style="width: 40px;"></div>
+    </header>
+    <main id="session-list-container" class="settings-content"></main>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const APP_ID = "4zfuDrBNweahMF352UAEywIucKM5bPuWBX40OsXr";
+    const JS_KEY = "aoPFjgIOGkCVRFwClZUfg3GCUlmZzIBceBZ7lD8t";
+    Parse.initialize(APP_ID, JS_KEY);
+    Parse.serverURL = 'https://parseapi.back4app.com';
+
+    // *** UPDATED: New Parse Object Definitions ***
+    const WithdrawalRequest = Parse.Object.extend("WithdrawalRequest");
+    const Transaction = Parse.Object.extend("Transaction");
+
+    // *** NEW: Initialize Live Query Client ***
+    const liveQueryClient = new Parse.LiveQueryClient({
+        applicationId: APP_ID,
+        serverURL: 'wss://' + new URL(Parse.serverURL).hostname, // Important: Use wss://
+        javascriptKey: JS_KEY
+    });
+    liveQueryClient.open();
+    
+    const countries=[{name:'Sri Lanka',code:'LK',currency:'LKR',symbol:'Re',flag:'🇱🇰'},{name:'India',code:'IN',currency:'INR',symbol:'₹',flag:'🇮🇳'},{name:'United States',code:'US',currency:'USD',symbol:'$',flag:'🇺🇸'},{name:'United Kingdom',code:'GB',currency:'GBP',symbol:'£',flag:'🇬🇧'},{name:'Canada',code:'CA',currency:'CAD',symbol:'C$',flag:'🇨🇦'},{name:'Australia',code:'AU',currency:'AUD',symbol:'A$',flag:'🇦🇺'},{name:'Germany',code:'DE',currency:'EUR',symbol:'€',flag:'🇩🇪'},{name:'France',code:'FR',currency:'EUR',symbol:'€',flag:'🇫🇷'},{name:'Japan',code:'JP',currency:'JPY',symbol:'¥',flag:'🇯🇵'},{name:'China',code:'CN',currency:'CNY',symbol:'¥',flag:'🇨🇳'},{name:'Russia',code:'RU',currency:'RUB',symbol:'₽',flag:'🇷🇺'},{name:'Brazil',code:'BR',currency:'BRL',symbol:'R$',flag:'🇧🇷'},{name:'South Africa',code:'ZA',currency:'ZAR',symbol:'R',flag:'🇿🇦'},{name:'United Arab Emirates',code:'AE',currency:'AED',symbol:'د.إ',flag:'🇦🇪'},{name:'Saudi Arabia',code:'SA',currency:'SAR',symbol:'﷼',flag:'🇸🇦'},{name:'Singapore',code:'SG',currency:'SGD',symbol:'S$',flag:'🇸🇬'},{name:'Malaysia',code:'MY',currency:'MYR',symbol:'RM',flag:'🇲🇾'},{name:'Thailand',code:'TH',currency:'THB',symbol:'฿',flag:'🇹🇭'},{name:'Switzerland',code:'CH',currency:'CHF',symbol:'CHF',flag:'🇨🇭'},{name:'New Zealand',code:'NZ',currency:'NZD',symbol:'NZ$',flag:'🇳🇿'}];
+    
+    const START_BALANCE = 0;
+    
+    let balance = 0;
+    let currentUser = null;
+    let withdrawalRequests = [];
+    const customAlertOverlay=document.getElementById('custom-alert-overlay'),customAlertTitle=document.getElementById('custom-alert-title'),customAlertMessage=document.getElementById('custom-alert-message'),customAlertOkBtn=document.getElementById('custom-alert-ok-btn');
+    function showAlert(t,e){customAlertTitle.textContent=t;customAlertMessage.innerHTML=e;customAlertOverlay.style.display='flex'}
+    customAlertOkBtn.addEventListener('click',()=>{customAlertOverlay.style.display='none'});
+    const fmtMoney=t=>{const e=(currentUser?currentUser.get('country'):null)?.symbol||'Re',o=t.toLocaleString(void 0,{maximumFractionDigits:2});return`${o} ${e}`};
+    async function updateBalance(t){balance=t;document.querySelectorAll('.balance-btn').forEach(e=>{e.innerHTML=`<i class="fa-solid fa-wallet"></i> ${fmtMoney(balance)}`});try{if(currentUser){currentUser.set('balance',t);await currentUser.save()}}catch(t){console.error("Failed to save balance to server:",t);showAlert("Sync Error","Could not save your new balance. Please check your connection.")}}
+    const authScreen=document.getElementById('auth-screen'),mainContent=document.getElementById('main-content'),registerBtn=document.getElementById('register-btn'),loginBtn=document.getElementById('login-btn'),logoutBtn=document.getElementById('logout-btn-menu'),regModal=document.getElementById('reg-success-modal'),regUsernameEl=document.getElementById('reg-username'),regPasswordEl=document.getElementById('reg-password'),regCopyBtn=document.getElementById('reg-copy-btn'),regNextBtn=document.getElementById('reg-next-btn'),loginModal=document.getElementById('login-modal'),closeLoginModalBtn=document.getElementById('close-login-modal'),loginForm=document.getElementById('login-form'),loginIdInput=document.getElementById('login-id-input'),loginPwInput=document.getElementById('login-pw-input'),loginErrorMsg=document.getElementById('login-error-msg'),countryModal=document.getElementById('country-modal'),closeCountryModalBtn=document.getElementById('close-country-modal'),countrySearchInput=document.getElementById('country-search-input'),countryList=document.getElementById('country-list');
+    function generatePassword(){let t="",e="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";for(let o=0;o<8;o++)t+=e.charAt(Math.floor(Math.random()*e.length));return t}
+    function generateUserId(){return String(Math.floor(1e9+9e9*Math.random()))}
+    
+    async function showMainApp(){
+        if(currentUser=Parse.User.current()){
+            try{await currentUser.fetch()}catch(t){return console.error("Error fetching user data:",t),t.code===Parse.Error.INVALID_SESSION_TOKEN?(await Parse.User.logOut(),void location.reload()):void showAlert("Session Error","Could not sync your account data. Please check your connection.")}
+            authScreen.style.display='none';
+            mainContent.style.display='block';
+            await updateBalance(currentUser.get('balance')||0);
+            checkSecurityStatusOnLoad();
+            await loadWithdrawalRequests();
+            renderWithdrawalRequests();
+            // *** NEW: Subscribe to Live Queries for real-time updates ***
+            subscribeToTransactions();
+        }else {
+            authScreen.style.display='flex';
+            mainContent.style.display='none';
+        }
+    }
+
+    // *** NEW: Live Query Subscription Function ***
+    function subscribeToTransactions() {
+        if (!currentUser) return;
+        
+        const query = new Parse.Query(Transaction);
+        query.equalTo('user', currentUser);
+        
+        let subscription = liveQueryClient.subscribe(query);
+
+        subscription.on('create', (transaction) => {
+            console.log('New transaction received:', transaction);
+            // Add a small delay for backend to fully process
+            setTimeout(async () => {
+                try {
+                    await currentUser.fetch(); // Fetch the latest user data including balance
+                    await updateBalance(currentUser.get('balance') || 0);
+                    showAlert("Update", `Your account was updated. A new ${transaction.get('type')} of ${fmtMoney(transaction.get('amount'))} was recorded.`);
+                    
+                    if (document.getElementById('history-page').classList.contains('active')) {
+                        loadAndRenderHistory();
+                    }
+                } catch (error) {
+                    console.error("Error fetching user after live query update:", error);
+                }
+            }, 1000);
+        });
+
+        subscription.on('open', () => {
+            console.log('LiveQuery subscription opened for transactions.');
+        });
+    }
+
+    window.addEventListener('load',async function(){const t=document.getElementById('preloader');currentUser=Parse.User.current(),setTimeout(async()=>{t.classList.add('hidden'),t.addEventListener('transitionend',async()=>{t.style.display='none',await showMainApp()},{once:!0})},500)});
+    registerBtn.addEventListener('click',()=>{Parse.User.current()?showAlert("Action Denied","Please log out first to create a new account."):(countrySearchInput.value='',populateCountryList(),countryModal.classList.add('show'))});
+    function populateCountryList(t=""){countryList.innerHTML='';const e=countries.filter(e=>e.name.toLowerCase().includes(t.toLowerCase()));e.forEach(t=>{const e=document.createElement('div');e.className='country-item',e.dataset.code=t.code,e.innerHTML=`<span class="flag">${t.flag}</span> <span>${t.name}</span>`,e.addEventListener('click',()=>handleCountrySelection(t)),countryList.appendChild(e)})}
+    async function handleCountrySelection(t){const e=generateUserId(),o=generatePassword(),r=new Parse.User;r.set("username",e),r.set("password",o),r.set("country",t),r.set("balance",START_BALANCE),r.set("regDate",(new Date).toLocaleDateString('en-GB')),r.set("securitySaved",!1);try{await r.signUp(),regUsernameEl.textContent=e,regPasswordEl.textContent=o,countryModal.classList.remove('show'),regModal.classList.add('show')}catch(t){console.error("Error while signing up user: ",t),showAlert("Registration Failed",`Error: ${t.message}`)}}
+    countrySearchInput.addEventListener('input',()=>{populateCountryList(countrySearchInput.value)}),closeCountryModalBtn.addEventListener('click',()=>countryModal.classList.remove('show')),regNextBtn.addEventListener('click',()=>{regModal.classList.remove('show'),showMainApp()}),regCopyBtn.addEventListener('click',()=>{const t=regPasswordEl.textContent;navigator.clipboard.writeText(`Username: ${regUsernameEl.textContent}\nPassword: ${t}`).then(()=>{regCopyBtn.innerHTML='<i class="fa-solid fa-check"></i> Copied!',setTimeout(()=>{regCopyBtn.innerHTML='<i class="fa-regular fa-copy"></i> Copy'},2e3)})}),loginBtn.addEventListener('click',()=>{loginErrorMsg.textContent='',loginForm.reset(),loginModal.classList.add('show')}),closeLoginModalBtn.addEventListener('click',()=>{loginModal.classList.remove('show')}),loginForm.addEventListener('submit',async t=>{t.preventDefault();const e=loginIdInput.value,o=loginPwInput.value;try{await Parse.User.logIn(e,o),loginModal.classList.remove('show'),showMainApp()}catch(t){console.error("Error while logging in user: ",t),loginErrorMsg.textContent="Incorrect Username or Password."}}),logoutBtn.addEventListener('click',async t=>{t.preventDefault(),confirm("Are you sure you want to log out?")&&await Parse.User.logOut().then(()=>location.reload()).catch(t=>{console.error("Logout failed:",t),showAlert("Error","Logout failed. Please try again.")})});
+    const menuPage=document.getElementById('menu-page'),openMenuBtn=document.getElementById('open-menu-btn'),closeMenuBtn=document.getElementById('close-menu-btn');openMenuBtn.addEventListener('click',t=>{t.preventDefault(),menuPage.classList.add('active')}),closeMenuBtn.addEventListener('click',t=>{t.preventDefault(),menuPage.classList.remove('active')});
+    const securitySettingsItem=document.getElementById('security-settings-item'),securityDetailsPage=document.getElementById('security-details-page'),closeSecurityPageBtn=document.getElementById('close-security-page-btn'),securityDetailsForm=document.getElementById('security-details-form'),profilePage=document.getElementById('profile-page'),openProfileBtn=document.getElementById('open-profile-btn'),closeProfilePageBtn=document.getElementById('close-profile-page-btn'),profileEnterDetailsBtn=document.getElementById('profile-enter-details-btn'),withdrawMenuItem=document.getElementById('withdraw-menu-item'),withdrawPage=document.getElementById('withdraw-page'),closeWithdrawPageBtn=document.getElementById('close-withdraw-page-btn');
+    function updateSecuritySettingsUI(){const t=securitySettingsItem.querySelector('small');t.classList.remove('status-disabled'),t.classList.add('status-protected'),t.innerHTML='<i class="fa-solid fa-circle-check"></i> Profile protected',securitySettingsItem.classList.add('locked')}
+    function checkSecurityStatusOnLoad(){currentUser&&currentUser.get('securitySaved')&&updateSecuritySettingsUI()}
+    securitySettingsItem.addEventListener('click',()=>{securitySettingsItem.classList.contains('locked')||securityDetailsPage.classList.add('active')}),closeSecurityPageBtn.addEventListener('click',()=>{securityDetailsPage.classList.remove('active')}),securityDetailsForm.addEventListener('submit',async t=>{t.preventDefault(),currentUser&&(currentUser.set("fullName",document.getElementById('sec-fullname').value),currentUser.set("surname",document.getElementById('sec-surname').value),currentUser.set("nic",document.getElementById('sec-nic').value),currentUser.set("address",document.getElementById('sec-address').value),currentUser.set("province",document.getElementById('sec-province').value),currentUser.set("district",document.getElementById('sec-district').value),currentUser.set("securitySaved",!0));try{await currentUser.save(),showAlert("Success","Security details saved successfully!"),updateSecuritySettingsUI(),securityDetailsPage.classList.remove('active')}catch(t){showAlert("Save Failed",`Error: ${t.message}`)}});
+    const withdrawModal=document.getElementById('withdraw-modal'),closeWithdrawModalBtn=document.getElementById('close-withdraw-modal'),withdrawForm=document.getElementById('withdraw-form'),fgCashCard=document.getElementById('fg-cash-card');
+    fgCashCard.addEventListener('click',t=>{t.preventDefault(),withdrawModal.classList.add('show')}),closeWithdrawModalBtn.addEventListener('click',()=>{withdrawModal.classList.remove('show')}),withdrawForm.addEventListener('submit',async t=>{t.preventDefault();if(!currentUser.get('securitySaved'))return showAlert("Withdrawal Rejected","Please complete your security settings first to proceed."),void withdrawModal.classList.remove('show');const e=parseFloat(document.getElementById('withdraw-amount').value);if(e>balance)return void showAlert("Error","Insufficient balance.");const o=new WithdrawalRequest;o.set("amount",e),o.set("method","FG Cash"),o.set("status","review"),o.set("user",currentUser);try{const t=await o.save();await updateBalance(balance-e),withdrawalRequests.unshift(t),renderWithdrawalRequests(),withdrawModal.classList.remove('show'),showAlert("Success","Withdrawal request submitted successfully!"),setTimeout(()=>{approveRequest(t.id)},1e4)}catch(t){showAlert("Error",`Failed to submit request: ${t.message}`)}});
+    async function approveRequest(t){const e=withdrawalRequests.find(e=>e.id===t);e&&"review"===e.get('status')&&(e.set('status','approved'),e.set('code',Math.random().toString(36).substring(2,6).toUpperCase()),await e.save(),renderWithdrawalRequests())}
+    async function cancelRequest(t){const e=withdrawalRequests.findIndex(e=>e.id===t);if(e>-1){const o=withdrawalRequests[e];"cancelled"!==o.get('status')&&(await updateBalance(balance+o.get('amount')),showAlert("Cancelled",`Withdrawal of ${fmtMoney(o.get('amount'))} has been cancelled and funds returned.`)),await o.destroy(),withdrawalRequests.splice(e,1),renderWithdrawalRequests()}}
+    async function loadWithdrawalRequests(){if(!currentUser)return;const t=new Parse.Query(WithdrawalRequest);t.equalTo("user",currentUser),t.descending("createdAt");try{withdrawalRequests=await t.find()}catch(t){console.error("Failed to load withdrawal requests",t),withdrawalRequests=[]}}
+    const requestsSection=document.getElementById('withdrawal-requests-section'),requestsHeader=document.getElementById('withdrawal-requests-header'),requestsBody=document.getElementById('withdrawal-requests-body');
+    function renderWithdrawalRequests(){withdrawalRequests.length>0?requestsSection.style.display='block':requestsSection.style.display='none',requestsBody.innerHTML='',withdrawalRequests.forEach(t=>{const e=t.get('status'),o=document.createElement('div');o.className='request-item',o.innerHTML=`
+                <div class="row">
+                    <span class="label">Date of request</span>
+                    <span class="value">${new Date(t.get('createdAt')).toLocaleDateString('en-GB')}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Payment method</span>
+                    <span class="value">${t.get('method')}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Amount</span>
+                    <span class="value">${fmtMoney(t.get('amount'))}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Status</span>
+                    <span class="value"><span class="status ${e}" data-id="${t.id}">${e.replace(/^\w/,t=>t.toUpperCase())}</span></span>
+                </div>
+                ${"review"===e?`<div class="request-actions"><button class="cancel-btn" data-id="${t.id}">Cancel</button></div>`:""}
+            `,requestsBody.appendChild(o)})}
+    requestsHeader.addEventListener('click',()=>{requestsHeader.classList.toggle('collapsed')}),requestsBody.addEventListener('click',t=>{if(t.target.classList.contains('status')&&t.target.classList.contains('approved')){const e=t.target.dataset.id,o=withdrawalRequests.find(t=>t.id===e);o&&o.get('code')&&showAlert("Withdrawal Code",`Your withdrawal code is: <strong>${o.get('code')}</strong>`)}t.target.classList.contains('cancel-btn')&&(confirm("Are you sure you want to cancel this withdrawal request?")&&cancelRequest(t.target.dataset.id))}),document.querySelector('.refresh-btn').addEventListener('click',async t=>{t.stopPropagation(),await loadWithdrawalRequests(),renderWithdrawalRequests(),showAlert("Refreshed","Withdrawal request status has been updated.")}),withdrawMenuItem.addEventListener('click',async()=>{withdrawPage.classList.add('active'),await loadWithdrawalRequests(),renderWithdrawalRequests()}),closeWithdrawPageBtn.addEventListener('click',()=>{withdrawPage.classList.remove('active')});
+    function populateProfileData(){currentUser&&(profileEnterDetailsBtn.style.display=currentUser.get('securitySaved')?'none':'flex',document.getElementById('profile-account-id').textContent=`id: ${currentUser.get('username')}`,document.getElementById('profile-password').textContent='********',document.getElementById('profile-reg-date').textContent=currentUser.get('regDate')||'N/A',document.getElementById('profile-name').textContent=currentUser.get('fullName')||'Not set',document.getElementById('profile-surname').textContent=currentUser.get('surname')||'Not set',document.getElementById('profile-country').textContent=currentUser.get('country')?.name||'Not set',document.getElementById('profile-city').textContent=currentUser.get('district')||'Not set')}
+    openProfileBtn.addEventListener('click',()=>{populateProfileData(),profilePage.classList.add('active')}),closeProfilePageBtn.addEventListener('click',()=>{profilePage.classList.remove('active')}),profileEnterDetailsBtn.addEventListener('click',()=>{profilePage.classList.remove('active'),securityDetailsPage.classList.add('active')});
+    const crashGameEl=document.getElementById('crash-game');document.getElementById('open-crash-btn').addEventListener('click',t=>{t.preventDefault(),crashGameEl.classList.add('active'),startCrashEngine()});function closeCrash(){crashGameEl.classList.remove('active'),stopCrashEngine()}
+    document.getElementById('close-crash-btn').addEventListener('click',t=>{t.preventDefault(),closeCrash()});const canvas=document.getElementById('crash-canvas'),ctx=canvas.getContext('2d'),jetEl=document.getElementById('aviator-jet'),statusEl=document.getElementById('crash-status'),multEl=document.getElementById('crash-multiplier'),historyEl=document.getElementById('crash-history');let raf=null,state="WAITING",countdown=5,startTs=0,lastTs=0,crashPoint=2,currentMultiplier=1,history=[],points=[],pxPerSec=100,curvePower=18;const k=.25,playerCountEl=document.getElementById('player-count-num');
+    function resizeCanvas(){const t=window.devicePixelRatio||1,e=canvas.getBoundingClientRect();canvas.width=e.width*t,canvas.height=e.height*t,ctx.setTransform(t,0,0,t,0,0)}
+    window.addEventListener('resize',resizeCanvas);function drawCurve(){const t=canvas.clientWidth,e=canvas.clientHeight;if(ctx.clearRect(0,0,t,e),!(points.length<2)){const o=points[points.length-1],r=ctx.createLinearGradient(0,e,0,0);r.addColorStop(0,"rgba(248, 49, 101, 0.4)"),r.addColorStop(1,"rgba(248, 49, 101, 0.0)"),ctx.beginPath(),ctx.moveTo(0,e),points.forEach(t=>{ctx.lineTo(t.x,t.y)}),ctx.lineTo(o.x,e),ctx.closePath(),ctx.fillStyle=r,ctx.fill(),ctx.beginPath(),points.forEach((t,e)=>{0===e?ctx.moveTo(t.x,t.y):ctx.lineTo(t.x,t.y)}),ctx.strokeStyle="rgba(248, 49, 101, 0.9)",ctx.lineWidth=4,ctx.stroke()}}
+    function updatePlayerCount(){const t=Math.floor(2e3+4001*Math.random());playerCountEl.textContent=t.toLocaleString()}
+    function addHistory(t){history.unshift(t),history=history.slice(0,20),historyEl.innerHTML=history.map(t=>{let e=t<2?"low":t<5?"mid":t<10?"high":"epic";return`<span class="hx ${e}">${t.toFixed(2)}x</span>`}).join('')}
+    const generateCrashPoint=()=>1+20*Math.pow(1-Math.random(),3),multiplierAt=t=>Math.exp(.25*Math.max(0,t));
+    function setupBetBox(t){const e=document.getElementById(t),o=e.querySelector('input[data-field="amount"]'),r=e.querySelector('button[data-action="main"]'),n=e.querySelector('[data-amount-display]'),a=e.querySelector('[data-info]'),s={queued:!1,inPlay:!1,cashed:!1,amount:0},i=()=>{const t=parseFloat(o.value)||0;n.textContent=fmtMoney(t)};o.addEventListener('input',i),e.querySelector('[data-action="minus"]').addEventListener('click',()=>{o.stepDown(),i()}),e.querySelector('[data-action="plus"]').addEventListener('click',()=>{o.stepUp(),i()}),e.querySelector('[data-quick]').addEventListener('click',t=>{const e=t.target.closest('.chip');e&&(o.value=Math.max(parseFloat(o.min),(parseFloat(o.value||0)+parseFloat(e.getAttribute('data-add')))),i())});const c=(t,e,o)=>{r.dataset.state=t,r.children[0].textContent=e,r.children[1].textContent=o};r.addEventListener('click',()=>{const t=r.dataset.state;if(s.amount=parseFloat(o.value)||0,"bet"===t){if(s.amount<parseFloat(o.min)||balance<s.amount)return;s.queued=!0,a.textContent="Waiting for next round...",c("wait","WAITING...",fmtMoney(s.amount))}else if("wait"===t)s.queued=!1,a.textContent="Bet cancelled",c("bet","BET",fmtMoney(s.amount));else if("cashout"===t){if(!s.inPlay||s.cashed)return;const t=+(s.amount*currentMultiplier);updateBalance(balance+t),s.inPlay=!1,s.cashed=!0;const e=fmtMoney(t);c("disabled",`CASHED OUT`,e),a.textContent=`You won ${e}!`}});const l=()=>{s.inPlay=!1,s.cashed=!1,s.queued=!1,a.textContent="Place your bet";const t=parseFloat(o.value)||0;c("bet","BET",fmtMoney(t))},d=()=>{s.queued?(updateBalance(balance-s.amount),s.inPlay=!0,s.cashed=!1,s.queued=!1,c("cashout","CASH OUT",fmtMoney(s.amount*currentMultiplier)),a.textContent="Cash out any time."):l()},u=()=>{s.inPlay&&!s.cashed&&(r.children[1].textContent=fmtMoney(s.amount*currentMultiplier))},p=()=>{s.inPlay&&!s.cashed&&(a.textContent="Flew away!",c("disabled","FLEW AWAY",""))};return i(),{onRoundStart:d,onRoundTick:u,onRoundCrash:p,resetUI:l}}
+    const bet1=setupBetBox('betbox-1'),bet2=setupBetBox('betbox-2');
+    function loop(t){if(!lastTs)lastTs=t;const e=(t-lastTs)/1e3;if(lastTs=t,"WAITING"===state){if(countdown-=e,multEl.style.opacity=0,statusEl.textContent=`ROUND STARTING IN ${countdown.toFixed(1)}s`,jetEl.style.transform='translate(-9999px,-9999px)',jetEl.classList.remove('exploded'),countdown<=0)updatePlayerCount(),state="RUNNING",startTs=t,points=[],crashPoint=generateCrashPoint(),statusEl.textContent='',multEl.style.color='#fff',multEl.style.opacity=1,bet1.onRoundStart(),bet2.onRoundStart()}else if("RUNNING"===state){const o=(t-startTs)/1e3;currentMultiplier=multiplierAt(o),multEl.textContent=`${currentMultiplier.toFixed(2)}x`;const r=canvas.clientWidth,n=canvas.clientHeight,a=20+o*pxPerSec,s=n-20-curvePower*Math.pow(o,1.8);points.push({x:a,y:s}),drawCurve();let i=0;points.length>1&&(i=180*Math.atan2(s-points[points.length-2].y,a-points[points.length-2].x)/Math.PI),jetEl.style.transform=`translate(${a-25}px, ${s-25}px) rotate(${i}deg)`,bet1.onRoundTick(),bet2.onRoundTick(),(currentMultiplier>=crashPoint||a>r-40)&&(state="CRASHED",jetEl.classList.add('exploded'),currentMultiplier=Math.min(currentMultiplier,crashPoint),statusEl.textContent=`FLEW AWAY @ ${currentMultiplier.toFixed(2)}x`,multEl.style.color='var(--aviator-red)',multEl.textContent=`${currentMultiplier.toFixed(2)}x`,addHistory(currentMultiplier),bet1.onRoundCrash(),bet2.onRoundCrash(),setTimeout(()=>{state="WAITING",countdown=5,bet1.resetUI(),bet2.resetUI()},2e3))}raf=requestAnimationFrame(loop)}
+    function startCrashEngine(){resizeCanvas(),raf||(lastTs=0,countdown=5,state="WAITING",raf=requestAnimationFrame(loop))}
+    function stopCrashEngine(){raf&&(cancelAnimationFrame(raf),raf=null)}
+    const diceGameEl=document.getElementById('dice-game'),openDiceBtn=document.getElementById('open-dice-btn'),closeDiceBtn=document.getElementById('close-dice-btn'),dice1=document.getElementById('dice-1'),dice2=document.getElementById('dice-2'),diceContainer1=document.getElementById('dice-container-1'),diceContainer2=document.getElementById('dice-container-2'),diceResultDisplay=document.getElementById('dice-result-display'),diceOddsBtns=document.querySelectorAll('.dice-odd-btn'),diceBetAmountDisplay=document.getElementById('dice-bet-amount-display'),dicePlayBtn=document.getElementById('dice-play-btn'),MIN_DICE_BET=100;let diceBetAmount=100,selectedOdd=null,isDiceRolling=!1;
+    openDiceBtn.addEventListener('click',t=>{t.preventDefault(),diceGameEl.classList.add('active'),updateDiceBetDisplay()}),closeDiceBtn.addEventListener('click',t=>{t.preventDefault(),diceGameEl.classList.remove('active')});function updateDiceBetDisplay(){diceBetAmountDisplay.textContent=fmtMoney(diceBetAmount)}
+    diceOddsBtns.forEach(t=>{t.addEventListener('click',()=>{isDiceRolling||(diceOddsBtns.forEach(t=>t.classList.remove('active')),t.classList.add('active'),selectedOdd=t.dataset.bet)})}),document.getElementById('dice-min-btn').addEventListener('click',()=>{isDiceRolling||(diceBetAmount=100,updateDiceBetDisplay())}),document.getElementById('dice-max-btn').addEventListener('click',()=>{isDiceRolling||(diceBetAmount=balance,updateDiceBetDisplay())}),document.getElementById('dice-double-btn').addEventListener('click',()=>{isDiceRolling||(diceBetAmount=Math.min(balance,2*diceBetAmount),updateDiceBetDisplay())}),document.getElementById('dice-half-btn').addEventListener('click',()=>{isDiceRolling||(diceBetAmount=Math.max(100,Math.floor(diceBetAmount/2)),updateDiceBetDisplay())});function rollDice(t,e){t.style.transform={1:"rotateX(0deg) rotateY(0deg)",2:"rotateX(-90deg) rotateY(0deg)",3:"rotateX(0deg) rotateY(90deg)",4:"rotateX(0deg) rotateY(-90deg)",5:"rotateX(90deg) rotateY(0deg)",6:"rotateY(180deg) rotateX(0deg)"}[e]}
+    dicePlayBtn.addEventListener('click',()=>{selectedOdd?(diceBetAmount<100?showAlert("Invalid Bet",`Minimum bet is ${fmtMoney(100)}.`):diceBetAmount>balance?showAlert("Error","Insufficient balance."):isDiceRolling||(isDiceRolling=!0,diceResultDisplay.textContent='',diceResultDisplay.classList.remove('win','lose'),updateBalance(balance-diceBetAmount),diceContainer1.classList.add('rolling'),diceContainer2.classList.add('rolling'),setTimeout(()=>{const t=Math.floor(6*Math.random())+1,e=Math.floor(6*Math.random())+1,o=t+e;diceContainer1.classList.remove('rolling'),diceContainer2.classList.remove('rolling'),rollDice(dice1,t),rollDice(dice2,e);let r;r=o<7?"under":7===o?"equal":"over";let n=0;selectedOdd===r?(n=diceBetAmount*{under:2.3,equal:5.8,over:2.3}[selectedOdd],updateBalance(balance+n),diceResultDisplay.textContent=`You won ${fmtMoney(n)}!`,diceResultDisplay.classList.add('win')):(diceResultDisplay.textContent=`You lost. Total was ${o}.`,diceResultDisplay.classList.add('lose')),isDiceRolling=!1},1e3))):showAlert("Selection Missing","Please select an odd (Under 7, Equal 7, or Over 7).")});
+    const searchIcon=document.querySelector('.header-search'),searchModal=document.getElementById('search-modal-overlay'),searchInput=document.getElementById('game-search-input');
+    searchIcon.addEventListener('click',()=>{searchModal.style.display='flex',searchInput.focus()}),searchModal.addEventListener('click',t=>{t.target===searchModal&&(searchModal.style.display='none')}),searchInput.addEventListener('input',()=>{const t=searchInput.value.toLowerCase().trim();document.querySelectorAll('.game-card').forEach(e=>{e.querySelector('.game-card-title').textContent.toLowerCase().includes(t)?e.style.display='block':e.style.display='none'})});
+    const navLinks=document.querySelectorAll('.nav-item');navLinks.forEach(t=>{t.addEventListener('click',e=>{e.preventDefault(),navLinks.forEach(t=>t.classList.remove('active')),e.currentTarget.classList.add('active'),"sports-nav-link"===e.currentTarget.id&&showAlert("Coming Soon","The Sports section is under development and will be available soon.")})});
+    
+    // --- UPDATED: History Page Logic ---
+    const historyPage = document.getElementById('history-page');
+    const historyMenuItem = document.getElementById('history-menu-item');
+    const openHistoryMenuBtn = document.getElementById('open-history-menu-btn');
+    const closeHistoryPageBtn = document.getElementById('close-history-page-btn');
+    const historyListContainer = document.getElementById('history-list-container');
+
+    async function loadAndRenderHistory() {
+        if (!currentUser) return;
+        historyListContainer.innerHTML = '<div class="spinner" style="margin: 40px auto;"></div>';
+        
+        try {
+            const query = new Parse.Query(Transaction);
+            query.equalTo("user", currentUser);
+            query.descending("createdAt");
+            
+            const transactions = await query.find();
+            
+            if (transactions.length === 0) {
+                historyListContainer.innerHTML = '<p style="text-align: center; color: #555;">No transaction history found.</p>';
+                return;
+            }
+            
+            const groupedByDate = transactions.reduce((acc, item) => {
+                const date = new Date(item.get('createdAt')).toLocaleDateString('en-GB');
+                if (!acc[date]) acc[date] = [];
+                acc[date].push(item);
+                return acc;
+            }, {});
+            
+            let html = '';
+            for (const date in groupedByDate) {
+                html += `<div class="history-group"><div class="history-date">${date}</div>`;
+                groupedByDate[date].forEach(item => {
+                    const time = new Date(item.get('createdAt')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const amount = item.get('amount');
+                    const type = item.get('type');
+                    const formattedAmount = fmtMoney(amount);
+
+                    let itemHtml = '';
+                    if (type === 'deposit') {
+                        itemHtml = `
+                            <div class="history-item">
+                                <div class="history-icon deposit"><i class="fas fa-arrow-down"></i></div>
+                                <div class="history-details">
+                                    <div class="history-text-col">
+                                        <span class="history-time">${time}</span>
+                                        <span class="history-desc">Deposit</span>
+                                    </div>
+                                    <span class="history-amount credit">+${formattedAmount}</span>
+                                </div>
+                            </div>`;
+                    } else if (type === 'withdrawal') {
+                        itemHtml = `
+                            <div class="history-item">
+                                <div class="history-icon withdrawal-req"><i class="fas fa-arrow-up"></i></div>
+                                <div class="history-details">
+                                     <div class="history-text-col">
+                                        <span class="history-time">${time}</span>
+                                        <span class="history-desc">Withdrawal</span>
+                                     </div>
+                                    <span class="history-amount debit">-${formattedAmount}</span>
+                                </div>
+                            </div>`;
+                    }
+                    html += itemHtml;
+                });
+                html += '</div>';
+            }
+            historyListContainer.innerHTML = html;
+        } catch (error) {
+            console.error('Failed to load history:', error);
+            historyListContainer.innerHTML = '<p style="text-align: center; color: var(--danger);">Could not load history. Please try again.</p>';
+        }
+    }
+
+    const openHistoryPage = () => {
+        historyPage.classList.add('active');
+        loadAndRenderHistory();
+    };
+
+    historyMenuItem.addEventListener('click', openHistoryPage);
+    openHistoryMenuBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.bottom-nav-item.active').forEach(item => item.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      openHistoryPage();
+    });
+    closeHistoryPageBtn.addEventListener('click', () => {
+      historyPage.classList.remove('active');
+      document.querySelectorAll('.bottom-nav-item.active').forEach(item => item.classList.remove('active'));
+      document.querySelector('.bottom-nav-item').classList.add('active');
+    });
+    
+    // --- NEW: Sign-in History Logic ---
+    const signinHistoryPage = document.getElementById('signin-history-page');
+    const signinHistoryItem = document.getElementById('signin-history-item');
+    const closeSigninHistoryBtn = document.getElementById('close-signin-history-btn');
+    const sessionListContainer = document.getElementById('session-list-container');
+
+    signinHistoryItem.addEventListener('click', () => {
+        signinHistoryPage.classList.add('active');
+        loadAndRenderSessions();
+    });
+
+    closeSigninHistoryBtn.addEventListener('click', () => {
+        signinHistoryPage.classList.remove('active');
+    });
+
+    async function loadAndRenderSessions() {
+        if (!currentUser) return;
+        sessionListContainer.innerHTML = '<div class="spinner" style="margin: 40px auto;"></div>';
+
+        try {
+            const sessionQuery = new Parse.Query(Parse.Session);
+            sessionQuery.equalTo('user', currentUser);
+            sessionQuery.descending('createdAt');
+            const sessions = await sessionQuery.find();
+
+            const currentUserSessionToken = currentUser.getSessionToken();
+            
+            if (sessions.length === 0) {
+                sessionListContainer.innerHTML = '<p style="text-align:center; color:#555;">No active sessions found.</p>';
+                return;
+            }
+            
+            let html = '';
+            sessions.forEach(session => {
+                const isCurrent = session.get('sessionToken') === currentUserSessionToken;
+                const installation = session.get('installationId') ? 'Mobile App' : 'Web Browser';
+                const createdAt = new Date(session.get('createdAt')).toLocaleString();
+                
+                html += `
+                    <div class="session-item">
+                        <div class="session-icon"><i class="fas fa-${installation === 'Web Browser' ? 'desktop' : 'mobile-alt'}"></i></div>
+                        <div class="session-details">
+                            <p>${installation}</p>
+                            <small>Logged in: ${createdAt}</small>
+                            ${isCurrent ? '<div class="session-current">Current Device</div>' : ''}
+                        </div>
+                        ${!isCurrent ? `<button class="revoke-session-btn" data-token="${session.get('sessionToken')}"><i class="fas fa-times-circle"></i></button>` : ''}
+                    </div>
+                `;
+            });
+            sessionListContainer.innerHTML = html;
+        } catch (error) {
+            console.error('Failed to load sessions:', error);
+            sessionListContainer.innerHTML = '<p style="color: var(--danger); text-align:center;">Could not load session history.</p>';
+        }
+    }
+
+    sessionListContainer.addEventListener('click', async (e) => {
+        const revokeBtn = e.target.closest('.revoke-session-btn');
+        if (revokeBtn) {
+            const tokenToRevoke = revokeBtn.dataset.token;
+            if (confirm("Are you sure you want to log out this device?")) {
+                try {
+                    revokeBtn.disabled = true;
+                    revokeBtn.innerHTML = '<i class="fas fa-spinner"></i>';
+                    
+                    // Call the Cloud Code function
+                    const result = await Parse.Cloud.run("revokeSession", { sessionToken: tokenToRevoke });
+
+                    if (result.success) {
+                        showAlert("Success", "The device has been logged out.");
+                        loadAndRenderSessions(); // Refresh the list
+                    }
+                } catch (error) {
+                    console.error("Failed to revoke session:", error);
+                    showAlert("Error", `Could not log out device: ${error.message}`);
+                    revokeBtn.disabled = false;
+                    revokeBtn.innerHTML = '<i class="fas fa-times-circle"></i>';
+                }
+            }
+        }
+    });
+
+});
+</script>
+</body>
+</html>
