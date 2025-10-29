@@ -17,9 +17,19 @@
     body{font-family:'Poppins',sans-serif;background:var(--bg-dark);color:var(--text-white);overflow-x:hidden}
     a,button{cursor:pointer}
     :focus-visible{outline:2px solid var(--primary-glow);outline-offset:2px}
-    #preloader{position:fixed;inset:0;background:#1a1a1a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .7s,visibility .7s}
+    #preloader{position:fixed;inset:0;background:var(--bg-dark);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .7s,visibility .7s}
     #preloader.hidden{opacity:0;visibility:hidden}
-    .loader-text{font-size:3rem;text-shadow:0 0 10px #ffd700,0 0 20px #ffd700;animation:pulse 1.5s infinite}
+    #preloader .loader-text{font-size:4rem;font-weight:700;margin-bottom:20px}
+    #preloader .loader-fg{color:var(--text-white)}
+    #preloader .loader-bet{color:var(--aviator-yellow)}
+    .dot-loader{display:flex;justify-content:center;align-items:center;gap:10px}
+    .dot-loader .dot{width:12px;height:12px;background-color:#999;border-radius:50%;animation:dot-bounce 1.4s infinite ease-in-out both}
+    .dot-loader .dot:nth-child(1){animation-delay:-.32s}
+    .dot-loader .dot:nth-child(2){animation-delay:-.24s}
+    .dot-loader .dot:nth-child(3){animation-delay:-.16s}
+    .dot-loader .dot:nth-child(4){animation-delay:-.08s}
+    .dot-loader .dot:nth-child(5){animation-delay:0s}
+    @keyframes dot-bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
     .spinner{width:60px;height:60px;border:5px solid #444;border-top:5px solid #ffd700;border-radius:50%;animation:spin 1s linear infinite}
     #auth-screen{position:fixed;inset:0;background:radial-gradient(circle at 50% 0%,#1a202c 0%,#10141f 40%);z-index:9990;display:none;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px;text-align:center}
     .auth-container{display:flex;flex-direction:column;justify-content:space-between;height:100%;width:100%;max-width:380px;animation:fadeInAuth .6s ease-out}
@@ -275,8 +285,6 @@
     @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
-    
-    /* Transaction History Styles */
     #history-list-container { padding: 10px; }
     .history-group { margin-bottom: 20px; }
     .history-date { font-weight: 600; color: #555; margin-bottom: 10px; padding-left: 5px; }
@@ -291,65 +299,37 @@
     .history-amount { font-weight: 600; font-size: 1rem; }
     .history-amount.credit { color: var(--success-color); }
     .history-amount.debit { color: var(--danger); }
-    
-    /* NEW: Sign-in History Styles */
-    #signin-history-page {
-        position: fixed; inset: 0; background: #f0f2f5; color: #1a202c; z-index: 1002;
-        transform: translateX(100%); transition: transform .4s ease-in-out; overflow-y: auto;
-    }
+    #signin-history-page {position: fixed; inset: 0; background: #f0f2f5; color: #1a202c; z-index: 1002;transform: translateX(100%); transition: transform .4s ease-in-out; overflow-y: auto;}
     #signin-history-page.active { transform: translateX(0); }
-    .session-item {
-        display: flex; align-items: center; background: #fff; border-radius: 12px;
-        padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
+    .session-item {display: flex; align-items: center; background: #fff; border-radius: 12px;padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);}
     .session-icon { font-size: 1.5rem; color: #555; width: 40px; text-align: center; }
     .session-details { flex-grow: 1; margin-left: 15px; }
     .session-details p { font-weight: 500; font-size: 0.95rem; }
     .session-details small { color: #777; font-size: 0.8rem; }
     .session-current { color: var(--success-color); font-weight: 600; font-size: 0.8rem; }
-    .revoke-session-btn {
-        background: transparent; border: none; font-size: 1.2rem; color: var(--danger);
-        cursor: pointer; padding: 5px 10px;
-    }
+    .revoke-session-btn {background: transparent; border: none; font-size: 1.2rem; color: var(--danger);cursor: pointer; padding: 5px 10px;}
     .revoke-session-btn:disabled { color: #aaa; }
     .fa-spinner { animation: spin 1s linear infinite; }
   </style>
 </head>
 <body>
-  <div id="preloader" aria-hidden="true"><h1 class="loader-text">FG BET</h1><div class="spinner" aria-hidden="true"></div></div>
+  <div id="preloader" aria-hidden="true"><h1 class="loader-text"><span class="loader-fg">FG</span><span class="loader-bet">BET</span></h1><div class="dot-loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
   <div id="auth-screen"><div class="auth-container"><div class="auth-logo-area"><h1 class="auth-logo">FGBET</h1><div class="auth-welcome"><h2>Welcome</h2><p>to the Future of Gaming</p></div></div><div class="auth-actions"><button id="login-btn" class="auth-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</button><button id="register-btn" class="auth-btn"><i class="fa-solid fa-user-plus"></i> Register</button></div></div></div>
   <div id="main-content"><header class="top-header"><button class="balance-btn"><i class="fa-solid fa-wallet"></i> 0 Re</button><div class="header-logo">FGBET</div><button class="icon-btn header-search" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button></header><nav class="main-nav" aria-label="Primary"><a href="#" id="sports-nav-link" class="nav-item">Sports</a><a href="#" id="casino-nav-link" class="nav-item active">Casino</a><a href="#" id="games-nav-link" class="nav-item">Games</a></nav><main class="content-padding"><h2 class="section-title">Popular Games</h2><div class="game-grid"><a href="#" id="open-crash-btn" class="game-card"><img src="https://image.pollinations.ai/prompt/Futuristic%20red%20glowing%20jet%20flying%20horizontally%20on%20a%20dark%20space%20background%2C%20dynamic%20angle%2C%20game%20art?width=800&height=600&nologo=true" alt="Stylized red jet game art" loading="lazy" decoding="async" width="800" height="600" /><div class="game-card-info"><span class="game-card-title">Aviator</span><span class="play-btn"><i class="fa-solid fa-play"></i></span></div></a><a href="#" id="open-dice-btn" class="game-card"><img src="https://image.pollinations.ai/prompt/Photorealistic%20close-up%20of%20two%20casino%20dice%20on%20dark%20felt%20table%2C%20dramatic%20side%20lighting%2C%20shallow%20depth%20of%20field%2C%20high%20detail%2C%20macro?width=800&height=600&nologo=true" alt="AI-generated photorealistic dice" loading="lazy" decoding="async" width="800" height="600" /><div class="game-card-info"><span class="game-card-title">Dice</span><span class="play-btn"><i class="fa-solid fa-play"></i></span></div></a></div></main><nav class="bottom-nav" aria-label="Secondary"><a href="#" class="bottom-nav-item active"><i class="fa-solid fa-house"></i> <span>Home</span></a><a href="#" class="bottom-nav-item"><i class="fa-solid fa-gift"></i> <span>Promos</span></a><a href="#" class="bet-slip-button" aria-label="Open bet slip"><i class="fa-solid fa-ticket"></i></a><a href="#" class="bottom-nav-item" id="open-history-menu-btn"><i class="fa-solid fa-clock-rotate-left"></i> <span>History</span></a><a href="#" class="bottom-nav-item" id="open-menu-btn"><i class="fa-solid fa-bars"></i> <span>Menu</span></a></nav></div>
   <div id="menu-page" role="dialog" aria-modal="true" aria-labelledby="settings-title"><header class="menu-header"><button class="back-btn" id="close-menu-btn" aria-label="Close settings"><i class="fa-solid fa-arrow-left"></i></button><h2 id="settings-title">Settings</h2><button class="profile-btn" id="open-profile-btn" aria-label="Profile"><i class="fa-solid fa-user-circle"></i></button></header><main class="settings-content"><h3 class="settings-section-title">Account management</h3><div class="settings-card"><div class="menu-item" id="history-menu-item"><div class="icon-wrapper"><i class="fa-solid fa-list-check"></i></div><div class="text-wrapper"><span>Transaction History</span></div></div><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-wallet"></i></div><div class="text-wrapper"><span>Make a deposit</span></div></div><div class="menu-item" id="withdraw-menu-item"><div class="icon-wrapper"><i class="fa-solid fa-money-bill-transfer"></i></div><div class="text-wrapper"><span>Withdraw</span></div></div></div><h3 class="settings-section-title">Security</h3><div class="settings-card"><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-fingerprint"></i></div><div class="text-wrapper"><span>PIN code and biometrics</span></div></div><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-shield-halved"></i></div><div class="text-wrapper"><span>Authenticator</span><small class="status-disabled"><i class="fa-solid fa-circle-xmark"></i> Not enabled</small></div></div><div class="menu-item" id="security-settings-item"><div class="icon-wrapper"><i class="fa-solid fa-lock"></i></div><div class="text-wrapper"><span>Security settings</span><small class="status-disabled"><i class="fa-solid fa-circle-xmark"></i> Not enabled</small></div></div><div class="menu-item" id="signin-history-item"><div class="icon-wrapper"><i class="fa-solid fa-desktop"></i></div><div class="text-wrapper"><span>Sign-in history</span></div></div></div><h3 class="settings-section-title">Bet settings</h3><div class="settings-card"><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-dollar-sign"></i></div><div class="text-wrapper"><span>Bet settings</span></div></div><div class="menu-item"><div class="icon-wrapper"><i class="fa-solid fa-hand-pointer"></i></div><div class="text-wrapper"><span>One-click bet</span></div></div></div><div class="settings-card"><a href="#" id="logout-btn-menu" class="menu-item logout-item"><div class="icon-wrapper"><i class="fa-solid fa-right-from-bracket"></i></div><div class="text-wrapper"><span>Log Out</span></div></a></div></main></div>
-  <div id="profile-page"><header class="menu-header"><button class="back-btn" id="close-profile-page-btn" aria-label="Back to Settings"><i class="fa-solid fa-arrow-left"></i></button><h2>Personal profile</h2><div style="width: 40px;"></div></header><main class="profile-content"><div class="profile-action-card" id="profile-enter-details-btn"><i class="fa-solid fa-pencil"></i> <span>Enter details</span></div><h3 class="profile-section-title">Account</h3><div class="profile-card"><div class="profile-item"><span class="label">Account number</span><span class="value" id="profile-account-id"></span></div><div class="profile-item"><span class="label">Password</span><span class="value" id="profile-password"></span></div><div class="profile-item"><span class="label">Registration date</span><span class="value" id="profile-reg-date"></span></div></div><h3 class="profile-section-title">Personal information</h3><div class="profile-card"><div class="profile-item"><span class="label">Name</span><span class="value" id="profile-name"></span></div><div class="profile-item"><span class="label">Surname</span><span class="value" id="profile-surname"></span></div><div class="profile-item"><span class="label">Country</span><span class="value" id="profile-country"></span></div><div class="profile-item"><span class="label">City</span><span class="value" id="profile-city"></span></div></div></main></div>
+  <div id="profile-page"><header class="menu-header"><button class="back-btn" id="close-profile-page-btn" aria-label="Back to Settings"><i class="fa-solid fa-arrow-left"></i></button><h2>Personal profile</h2><div style="width: 40px;"></div></header><main class="profile-content"><div class="profile-action-card" id="profile-enter-details-btn"><i class="fa-solid fa-pencil"></i> <span>Enter details</span></div><h3 class="profile-section-title">Account</h3><div class="profile-card"><div class="profile-item"><span class="label">Account number</span><span class="value" id="profile-account-id"></span></div><div class="profile-item"><span class="label">Password</span><span class="value" id="profile-password"></span></div><div class="profile-item"><span class="label">Registration date</span><span class="value" id="profile-reg-date"></span></div></div><h3 class="profile-section-title">Personal information</h3><div class="profile-card"><div class="profile-item"><span class="label">Name</span><span class="value" id="profile-name"></span></div><div class="profile-item"><span class="label">Surname</span><span class="value" id="profile-surname"></span></div><div class="profile-item"><span class="label">Country</span><span class="value" id="profile-country"></span></div></div></main></div>
   <div id="crash-game" aria-hidden="true"><div class="game-floating-controls"><button class="game-back-btn" id="close-crash-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><button class="game-balance-btn balance-btn">0 Re</button></div><div id="crash-game-content"><div id="crash-history" class="crash-history-bar"></div><div class="crash-stage"><canvas id="crash-canvas" class="crash-canvas"></canvas><div class="player-counter"><div class="avatars"><img src="https://picsum.photos/40/40?random=1" alt="player avatar"><img src="https://picsum.photos/40/40?random=2" alt="player avatar"><img src="https://picsum.photos/40/40?random=3" alt="player avatar"></div><span id="player-count-num">3,451</span></div><svg id="aviator-jet" viewBox="0 0 133 134" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M57.9992 0.333008L43.8325 35.833H19.6659L2.16587 53.333L0.33252 65.833L21.4992 58.333L40.3325 77.1663L31.4992 133.166L43.8325 120.833L54.4992 84.333L79.1659 108.999L91.4992 96.6663L66.8325 71.9997L103.333 61.333L119.666 44.9997L132.166 42.4997L124.666 21.333L77.1659 40.1663L57.9992 0.333008Z" fill="#f83165"/></svg><div id="crash-status" class="crash-status">WAITING FOR NEXT ROUND</div><div id="crash-multiplier" class="crash-multiplier">1.00x</div></div><div class="bet-panels"><div class="bet-card" id="betbox-1"><div class="bet-tabs"><button class="tab-btn active">Bet</button><button class="tab-btn">Auto</button></div><div class="bet-controls"><div class="bet-left"><div class="amount-control"><button data-action="minus" aria-label="Decrease bet">-</button><input type="number" step="10" min="50" value="50.00" data-field="amount" aria-label="Bet amount" /><button data-action="plus" aria-label="Increase bet">+</button></div><div class="chip-row" data-quick><button class="chip" data-add="100">100</button><button class="chip" data-add="200">200</button><button class="chip" data-add="500">500</button><button class="chip" data-add="1000">1000</button></div></div><button class="action-btn" data-action="main" data-state="bet"><span>BET</span><span class="bet-amount" data-amount-display>50.00 Re</span></button></div><div class="muted" data-info>Place your bet for the next round</div></div><div class="bet-card" id="betbox-2"><div class="bet-tabs"><button class="tab-btn active">Bet</button><button class="tab-btn">Auto</button></div><div class="bet-controls"><div class="bet-left"><div class="amount-control"><button data-action="minus" aria-label="Decrease bet">-</button><input type="number" step="10" min="50" value="50.00" data-field="amount" aria-label="Bet amount" /><button data-action="plus" aria-label="Increase bet">+</button></div><div class="chip-row" data-quick><button class="chip" data-add="100">100</button><button class="chip" data-add="200">200</button><button class="chip" data-add="500">500</button><button class="chip" data-add="1000">1000</button></div></div><button class="action-btn" data-action="main" data-state="bet"><span>BET</span><span class="bet-amount" data-amount-display>50.00 Re</span></button></div><div class="muted" data-info>Place your bet for the next round</div></div></div></div></div>
   <div id="dice-game"><div class="game-floating-controls"><button class="game-back-btn" id="close-dice-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><button class="game-balance-btn balance-btn">0 Re</button></div><main class="dice-game-area"><div class="dice-stage"><div id="dice-container-1" class="dice-container"><div class="dice" id="dice-1"><div class="face front  f1"><span class="dot"></span></div><div class="face back   f6"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face right  f3"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face left   f4"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face top    f2"><span class="dot"></span><span class="dot"></span></div><div class="face bottom f5"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div></div><div id="dice-container-2" class="dice-container"><div class="dice" id="dice-2"><div class="face front  f1"><span class="dot"></span></div><div class="face back   f6"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face right  f3"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face left   f4"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="face top    f2"><span class="dot"></span><span class="dot"></span></div><div class="face bottom f5"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div></div></div><p id="dice-result-display"></p><div class="dice-controls"><div class="dice-odds-selector"><button class="dice-odd-btn" data-bet="under"><span>Under 7</span><span class="odd-val">x 2.3</span></button><button class="dice-odd-btn" data-bet="equal"><span>Equal 7</span><span class="odd-val">x 5.8</span></button><button class="dice-odd-btn" data-bet="over"><span>Over 7</span><span class="odd-val">x 2.3</span></button></div><div class="dice-bet-adjust"><button id="dice-min-btn" class="dice-adjust-btn">MIN</button><button id="dice-double-btn" class="dice-adjust-btn">X2</button><button id="dice-half-btn" class="dice-adjust-btn">X/2</button><button id="dice-max-btn" class="dice-adjust-btn">MAX</button></div><div id="dice-bet-amount-display">100.00</div><div class="dice-action-buttons"><button id="dice-cash-btn" class="dice-action-btn"><i class="fa-solid fa-coins"></i></button><button id="dice-play-btn" class="dice-action-btn"><i class="fa-solid fa-play"></i></button><button id="dice-auto-btn" class="dice-action-btn"><i class="fa-solid fa-sync"></i></button></div></div></main></div>
   <div id="search-modal-overlay"><div class="search-modal-content"><input type="search" id="game-search-input" placeholder="Search games..."></div></div>
   <div id="reg-success-modal"><div class="reg-icon"><i class="fa-solid fa-check"></i></div><h2 class="reg-title">Registration successful!</h2><div class="reg-details"><div class="reg-detail-item"><span>Username:</span><span id="reg-username"></span></div><div class="reg-detail-item"><span>Password:</span><span id="reg-password"></span></div></div><div class="reg-actions"><button class="reg-action-btn" id="reg-copy-btn"><i class="fa-regular fa-copy"></i> Copy</button><button class="reg-action-btn" id="reg-share-btn"><i class="fa-solid fa-share-nodes"></i> Share</button></div><button id="reg-next-btn">Next</button></div>
   <div id="login-modal" class="modal-overlay"><div class="modal-content"><button id="close-login-modal" class="close-modal-btn" aria-label="Close">&times;</button><h2>Login</h2><form id="login-form"><div class="input-group"><input type="text" id="login-id-input" placeholder="Username / ID" required></div><div class="input-group"><input type="password" id="login-pw-input" placeholder="Password" required></div><p id="login-error-msg"></p><button type="submit" id="login-submit-btn">Login</button></form></div></div>
   <div id="country-modal" class="modal-overlay"><div class="modal-content"><button id="close-country-modal" class="close-modal-btn" aria-label="Close">&times;</button><h2>Select Your Country</h2><div class="input-group"><input type="search" id="country-search-input" placeholder="Search for a country..."></div><div id="country-list"></div></div></div>
-  <div id="security-details-page"><header class="menu-header"><button class="back-btn" id="close-security-page-btn" aria-label="Back to Settings"><i class="fa-solid fa-arrow-left"></i></button><h2>Security Details</h2><div style="width: 40px;"></div></header><main class="sec-details-content"><form id="security-details-form"><div class="input-group"><label for="sec-fullname">Full Name</label><input type="text" id="sec-fullname" required></div><div class="input-group"><label for="sec-surname">Surname</label><input type="text" id="sec-surname" required></div><div class="input-group"><label for="sec-nic">NIC Number</label><input type="text" id="sec-nic" required></div><div class="input-group"><label for="sec-address">Home Address</label><input type="text" id="sec-address" required></div><div class="input-group"><label for="sec-province">Province (පළාත)</label><select id="sec-province" required><option value="">-- Select Province --</option><option>Western Province (බස්නාහිර පළාත)</option><option>Central Province (මධ්‍යම පළාත)</option><option>Southern Province (දකුණු පළාත)</option><option>Northern Province (උතුරු පළාත)</option><option>Eastern Province (නැගෙනහිර පළාත)</option><option>North Western Province (වයඹ පළාත)</option><option>North Central Province (උතුරු මැද පළාත)</option><option>Uva Province (ඌව පළාත)</option><option>Sabaragamuwa Province (සබරගමුව පළාත)</option></select></div><div class="input-group"><label for="sec-district">District (දිස්ත්‍රික්කය)</label><select id="sec-district" required><option value="">-- Select District --</option><option>Colombo</option><option>Gampaha</option><option>Kalutara</option><option>Kandy</option><option>Matale</option><option>Nuwara Eliya</option><option>Galle</option><option>Matara</option><option>Hambantota</option><option>Jaffna</option><option>Kilinochchi</option><option>Mannar</option><option>Vavuniya</option><option>Mullaitivu</option><option>Batticaloa</option><option>Ampara</option><option>Trincomalee</option><option>Kurunegala</option><option>Puttalam</option><option>Anurapura</option><option>Polonnaruwa</option><option>Badulla</option><option>Monaragala</option><option>Ratnapura</option><option>Kegalle</option></select></div><button type="submit">Save Details</button></form></main></div>
+  <div id="security-details-page"><header class="menu-header"><button class="back-btn" id="close-security-page-btn" aria-label="Back to Settings"><i class="fa-solid fa-arrow-left"></i></button><h2>Security Details</h2><div style="width: 40px;"></div></header><main class="sec-details-content"><form id="security-details-form"><div class="input-group"><label for="sec-fullname">Full Name</label><input type="text" id="sec-fullname" required></div><div class="input-group"><label for="sec-surname">Surname</label><input type="text" id="sec-surname" required></div><div class="input-group"><label for="sec-nic">NIC Number</label><input type="text" id="sec-nic" required></div><div class="input-group"><label for="sec-address">Home Address</label><input type="text" id="sec-address" required></div><button type="submit">Save Details</button></form></main></div>
   <div id="withdraw-page"><header class="menu-header"><button class="back-btn" id="close-withdraw-page-btn" aria-label="Back to Settings"><i class="fa-solid fa-arrow-left"></i></button><h2>Withdraw Funds</h2><div style="width: 40px;"></div></header><main class="withdraw-content"><div id="withdrawal-requests-section"><div id="withdrawal-requests-header" class="collapsed"><span>Withdrawal requests</span><div><button class="refresh-btn"><i class="fa-solid fa-sync"></i> REFRESH</button><i class="fa-solid fa-chevron-up toggle-icon"></i></div></div><div id="withdrawal-requests-body"></div></div><h3 class="withdraw-section-title">CASH</h3><div class="payment-grid"><a href="#" class="payment-method-card" id="fg-cash-card"><div class="payment-icon-wrapper"><div class="fg-logo">FGBET</div></div><span>FG Cash</span></a></div><h3 class="withdraw-section-title">CRYPTOCURRENCY</h3><div class="payment-grid"><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text" style="color: #26A17B;">T</span><i class="fa-brands fa-gg-circle icon-overlay" style="color: #7B3FE4;"></i></div><span>Tether on POL</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text" style="color: #26A17B;">T</span><i class="fa-brands fa-telegram icon-overlay" style="color: #0088cc;"></i></div><span>Tether on TON</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text" style="color: #26A17B;">T</span><span class="icon-tron icon-overlay">TRX</span></div><span>Tether on Tron</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text" style="color: #26A17B;">T</span><span class="icon-bsc icon-overlay">BNB</span></div><span>Tether on BSC</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><i class="fa-brands fa-ethereum"></i></div><span>Tether on Ethereum</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text icon-tron">TRX</span></div><span>TRON</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><i class="fa-brands fa-bitcoin"></i></div><span>Bitcoin</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text icon-litecoin">Ł</span></div><span>Litecoin</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><i class="fa-brands fa-ethereum"></i></div><span>Ethereum</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text icon-bsc">BNB</span></div><span>Binance Coin BSC</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><i class="fa-brands fa-dogecoin"></i></div><span>Dogecoin</span></a><a href="#" class="payment-method-card"><div class="payment-icon-wrapper"><span class="icon-text icon-xrp">XRP</span></div><span>XRP</span></a></div></main></div>
   <div id="withdraw-modal" class="modal-overlay"><div class="modal-content"><button id="close-withdraw-modal" class="close-modal-btn" aria-label="Close">&times;</button><h2>Withdraw Funds</h2><form id="withdraw-form"><div class="input-group"><label>Amount (Min. 250.00)</label><input type="number" id="withdraw-amount" value="250" min="250" required></div><div class="input-group"><label>City</label><select id="withdraw-city" required><option>Welimada</option></select></div><div class="input-group"><label>Street</label><select id="withdraw-street" required><option>Steve Earning 24/7</option></select></div><button type="submit" id="withdraw-confirm-btn">Confirm</button></form></div></div>
   <div id="custom-alert-overlay"><div class="custom-alert-box"><h3 id="custom-alert-title"></h3><p id="custom-alert-message"></p><button id="custom-alert-ok-btn">OK</button></div></div>
-  
-  <div id="history-page">
-    <header class="menu-header">
-      <button class="back-btn" id="close-history-page-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
-      <h2>Transaction History</h2>
-      <div style="width: 40px;"></div>
-    </header>
-    <main id="history-list-container" class="settings-content"></main>
-  </div>
-
-  <!-- NEW: Sign-in History Page -->
-  <div id="signin-history-page">
-    <header class="menu-header">
-      <button class="back-btn" id="close-signin-history-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
-      <h2>Sign-in History</h2>
-      <div style="width: 40px;"></div>
-    </header>
-    <main id="session-list-container" class="settings-content"></main>
-  </div>
+  <div id="history-page"><header class="menu-header"><button class="back-btn" id="close-history-page-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><h2>Transaction History</h2><div style="width: 40px;"></div></header><main id="history-list-container" class="settings-content"></main></div>
+  <div id="signin-history-page"><header class="menu-header"><button class="back-btn" id="close-signin-history-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><h2>Sign-in History</h2><div style="width: 40px;"></div></header><main id="session-list-container" class="settings-content"></main></div>
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -358,20 +338,10 @@
     Parse.initialize(APP_ID, JS_KEY);
     Parse.serverURL = 'https://parseapi.back4app.com';
 
-    // *** UPDATED: New Parse Object Definitions ***
     const WithdrawalRequest = Parse.Object.extend("WithdrawalRequest");
     const Transaction = Parse.Object.extend("Transaction");
-
-    // *** NEW: Initialize Live Query Client ***
-    const liveQueryClient = new Parse.LiveQueryClient({
-        applicationId: APP_ID,
-        serverURL: 'wss://' + new URL(Parse.serverURL).hostname, // Important: Use wss://
-        javascriptKey: JS_KEY
-    });
-    liveQueryClient.open();
     
     const countries=[{name:'Sri Lanka',code:'LK',currency:'LKR',symbol:'Re',flag:'🇱🇰'},{name:'India',code:'IN',currency:'INR',symbol:'₹',flag:'🇮🇳'},{name:'United States',code:'US',currency:'USD',symbol:'$',flag:'🇺🇸'},{name:'United Kingdom',code:'GB',currency:'GBP',symbol:'£',flag:'🇬🇧'},{name:'Canada',code:'CA',currency:'CAD',symbol:'C$',flag:'🇨🇦'},{name:'Australia',code:'AU',currency:'AUD',symbol:'A$',flag:'🇦🇺'},{name:'Germany',code:'DE',currency:'EUR',symbol:'€',flag:'🇩🇪'},{name:'France',code:'FR',currency:'EUR',symbol:'€',flag:'🇫🇷'},{name:'Japan',code:'JP',currency:'JPY',symbol:'¥',flag:'🇯🇵'},{name:'China',code:'CN',currency:'CNY',symbol:'¥',flag:'🇨🇳'},{name:'Russia',code:'RU',currency:'RUB',symbol:'₽',flag:'🇷🇺'},{name:'Brazil',code:'BR',currency:'BRL',symbol:'R$',flag:'🇧🇷'},{name:'South Africa',code:'ZA',currency:'ZAR',symbol:'R',flag:'🇿🇦'},{name:'United Arab Emirates',code:'AE',currency:'AED',symbol:'د.إ',flag:'🇦🇪'},{name:'Saudi Arabia',code:'SA',currency:'SAR',symbol:'﷼',flag:'🇸🇦'},{name:'Singapore',code:'SG',currency:'SGD',symbol:'S$',flag:'🇸🇬'},{name:'Malaysia',code:'MY',currency:'MYR',symbol:'RM',flag:'🇲🇾'},{name:'Thailand',code:'TH',currency:'THB',symbol:'฿',flag:'🇹🇭'},{name:'Switzerland',code:'CH',currency:'CHF',symbol:'CHF',flag:'🇨🇭'},{name:'New Zealand',code:'NZ',currency:'NZD',symbol:'NZ$',flag:'🇳🇿'}];
-    
     const START_BALANCE = 0;
     
     let balance = 0;
@@ -395,47 +365,13 @@
             checkSecurityStatusOnLoad();
             await loadWithdrawalRequests();
             renderWithdrawalRequests();
-            // *** NEW: Subscribe to Live Queries for real-time updates ***
-            subscribeToTransactions();
         }else {
             authScreen.style.display='flex';
             mainContent.style.display='none';
         }
     }
 
-    // *** NEW: Live Query Subscription Function ***
-    function subscribeToTransactions() {
-        if (!currentUser) return;
-        
-        const query = new Parse.Query(Transaction);
-        query.equalTo('user', currentUser);
-        
-        let subscription = liveQueryClient.subscribe(query);
-
-        subscription.on('create', (transaction) => {
-            console.log('New transaction received:', transaction);
-            // Add a small delay for backend to fully process
-            setTimeout(async () => {
-                try {
-                    await currentUser.fetch(); // Fetch the latest user data including balance
-                    await updateBalance(currentUser.get('balance') || 0);
-                    showAlert("Update", `Your account was updated. A new ${transaction.get('type')} of ${fmtMoney(transaction.get('amount'))} was recorded.`);
-                    
-                    if (document.getElementById('history-page').classList.contains('active')) {
-                        loadAndRenderHistory();
-                    }
-                } catch (error) {
-                    console.error("Error fetching user after live query update:", error);
-                }
-            }, 1000);
-        });
-
-        subscription.on('open', () => {
-            console.log('LiveQuery subscription opened for transactions.');
-        });
-    }
-
-    window.addEventListener('load',async function(){const t=document.getElementById('preloader');currentUser=Parse.User.current(),setTimeout(async()=>{t.classList.add('hidden'),t.addEventListener('transitionend',async()=>{t.style.display='none',await showMainApp()},{once:!0})},500)});
+    window.addEventListener('load',async function(){const t=document.getElementById('preloader');currentUser=Parse.User.current(),setTimeout(async()=>{t.classList.add('hidden'),t.addEventListener('transitionend',async()=>{t.style.display='none',await showMainApp()},{once:!0})},1500)});
     registerBtn.addEventListener('click',()=>{Parse.User.current()?showAlert("Action Denied","Please log out first to create a new account."):(countrySearchInput.value='',populateCountryList(),countryModal.classList.add('show'))});
     function populateCountryList(t=""){countryList.innerHTML='';const e=countries.filter(e=>e.name.toLowerCase().includes(t.toLowerCase()));e.forEach(t=>{const e=document.createElement('div');e.className='country-item',e.dataset.code=t.code,e.innerHTML=`<span class="flag">${t.flag}</span> <span>${t.name}</span>`,e.addEventListener('click',()=>handleCountrySelection(t)),countryList.appendChild(e)})}
     async function handleCountrySelection(t){const e=generateUserId(),o=generatePassword(),r=new Parse.User;r.set("username",e),r.set("password",o),r.set("country",t),r.set("balance",START_BALANCE),r.set("regDate",(new Date).toLocaleDateString('en-GB')),r.set("securitySaved",!1);try{await r.signUp(),regUsernameEl.textContent=e,regPasswordEl.textContent=o,countryModal.classList.remove('show'),regModal.classList.add('show')}catch(t){console.error("Error while signing up user: ",t),showAlert("Registration Failed",`Error: ${t.message}`)}}
@@ -444,47 +380,61 @@
     const securitySettingsItem=document.getElementById('security-settings-item'),securityDetailsPage=document.getElementById('security-details-page'),closeSecurityPageBtn=document.getElementById('close-security-page-btn'),securityDetailsForm=document.getElementById('security-details-form'),profilePage=document.getElementById('profile-page'),openProfileBtn=document.getElementById('open-profile-btn'),closeProfilePageBtn=document.getElementById('close-profile-page-btn'),profileEnterDetailsBtn=document.getElementById('profile-enter-details-btn'),withdrawMenuItem=document.getElementById('withdraw-menu-item'),withdrawPage=document.getElementById('withdraw-page'),closeWithdrawPageBtn=document.getElementById('close-withdraw-page-btn');
     function updateSecuritySettingsUI(){const t=securitySettingsItem.querySelector('small');t.classList.remove('status-disabled'),t.classList.add('status-protected'),t.innerHTML='<i class="fa-solid fa-circle-check"></i> Profile protected',securitySettingsItem.classList.add('locked')}
     function checkSecurityStatusOnLoad(){currentUser&&currentUser.get('securitySaved')&&updateSecuritySettingsUI()}
-    securitySettingsItem.addEventListener('click',()=>{securitySettingsItem.classList.contains('locked')||securityDetailsPage.classList.add('active')}),closeSecurityPageBtn.addEventListener('click',()=>{securityDetailsPage.classList.remove('active')}),securityDetailsForm.addEventListener('submit',async t=>{t.preventDefault(),currentUser&&(currentUser.set("fullName",document.getElementById('sec-fullname').value),currentUser.set("surname",document.getElementById('sec-surname').value),currentUser.set("nic",document.getElementById('sec-nic').value),currentUser.set("address",document.getElementById('sec-address').value),currentUser.set("province",document.getElementById('sec-province').value),currentUser.set("district",document.getElementById('sec-district').value),currentUser.set("securitySaved",!0));try{await currentUser.save(),showAlert("Success","Security details saved successfully!"),updateSecuritySettingsUI(),securityDetailsPage.classList.remove('active')}catch(t){showAlert("Save Failed",`Error: ${t.message}`)}});
+    securitySettingsItem.addEventListener('click',()=>{securitySettingsItem.classList.contains('locked')||securityDetailsPage.classList.add('active')}),closeSecurityPageBtn.addEventListener('click',()=>{securityDetailsPage.classList.remove('active')}),securityDetailsForm.addEventListener('submit',async t=>{t.preventDefault(),currentUser&&(currentUser.set("fullName",document.getElementById('sec-fullname').value),currentUser.set("surname",document.getElementById('sec-surname').value),currentUser.set("nic",document.getElementById('sec-nic').value),currentUser.set("address",document.getElementById('sec-address').value),currentUser.set("securitySaved",!0));try{await currentUser.save(),showAlert("Success","Security details saved successfully!"),updateSecuritySettingsUI(),securityDetailsPage.classList.remove('active')}catch(t){showAlert("Save Failed",`Error: ${t.message}`)}});
     const withdrawModal=document.getElementById('withdraw-modal'),closeWithdrawModalBtn=document.getElementById('close-withdraw-modal'),withdrawForm=document.getElementById('withdraw-form'),fgCashCard=document.getElementById('fg-cash-card');
     fgCashCard.addEventListener('click',t=>{t.preventDefault(),withdrawModal.classList.add('show')}),closeWithdrawModalBtn.addEventListener('click',()=>{withdrawModal.classList.remove('show')}),withdrawForm.addEventListener('submit',async t=>{t.preventDefault();if(!currentUser.get('securitySaved'))return showAlert("Withdrawal Rejected","Please complete your security settings first to proceed."),void withdrawModal.classList.remove('show');const e=parseFloat(document.getElementById('withdraw-amount').value);if(e>balance)return void showAlert("Error","Insufficient balance.");const o=new WithdrawalRequest;o.set("amount",e),o.set("method","FG Cash"),o.set("status","review"),o.set("user",currentUser);try{const t=await o.save();await updateBalance(balance-e),withdrawalRequests.unshift(t),renderWithdrawalRequests(),withdrawModal.classList.remove('show'),showAlert("Success","Withdrawal request submitted successfully!"),setTimeout(()=>{approveRequest(t.id)},1e4)}catch(t){showAlert("Error",`Failed to submit request: ${t.message}`)}});
     async function approveRequest(t){const e=withdrawalRequests.find(e=>e.id===t);e&&"review"===e.get('status')&&(e.set('status','approved'),e.set('code',Math.random().toString(36).substring(2,6).toUpperCase()),await e.save(),renderWithdrawalRequests())}
     async function cancelRequest(t){const e=withdrawalRequests.findIndex(e=>e.id===t);if(e>-1){const o=withdrawalRequests[e];"cancelled"!==o.get('status')&&(await updateBalance(balance+o.get('amount')),showAlert("Cancelled",`Withdrawal of ${fmtMoney(o.get('amount'))} has been cancelled and funds returned.`)),await o.destroy(),withdrawalRequests.splice(e,1),renderWithdrawalRequests()}}
-    async function loadWithdrawalRequests(){if(!currentUser)return;const t=new Parse.Query(WithdrawalRequest);t.equalTo("user",currentUser),t.descending("createdAt");try{withdrawalRequests=await t.find()}catch(t){console.error("Failed to load withdrawal requests",t),withdrawalRequests=[]}}
+    
+    async function loadWithdrawalRequests(){
+        if(!currentUser) return;
+        const query = new Parse.Query(WithdrawalRequest);
+        query.equalTo("user", currentUser);
+        query.notEqualTo("status", "completed"); 
+        query.descending("createdAt");
+        try {
+            withdrawalRequests = await query.find();
+        } catch(t) {
+            console.error("Failed to load withdrawal requests", t);
+            withdrawalRequests = [];
+        }
+    }
+
     const requestsSection=document.getElementById('withdrawal-requests-section'),requestsHeader=document.getElementById('withdrawal-requests-header'),requestsBody=document.getElementById('withdrawal-requests-body');
-    function renderWithdrawalRequests(){withdrawalRequests.length>0?requestsSection.style.display='block':requestsSection.style.display='none',requestsBody.innerHTML='',withdrawalRequests.forEach(t=>{const e=t.get('status'),o=document.createElement('div');o.className='request-item',o.innerHTML=`
-                <div class="row">
-                    <span class="label">Date of request</span>
-                    <span class="value">${new Date(t.get('createdAt')).toLocaleDateString('en-GB')}</span>
-                </div>
-                <div class="row">
-                    <span class="label">Payment method</span>
-                    <span class="value">${t.get('method')}</span>
-                </div>
-                <div class="row">
-                    <span class="label">Amount</span>
-                    <span class="value">${fmtMoney(t.get('amount'))}</span>
-                </div>
-                <div class="row">
-                    <span class="label">Status</span>
-                    <span class="value"><span class="status ${e}" data-id="${t.id}">${e.replace(/^\w/,t=>t.toUpperCase())}</span></span>
-                </div>
-                ${"review"===e?`<div class="request-actions"><button class="cancel-btn" data-id="${t.id}">Cancel</button></div>`:""}
-            `,requestsBody.appendChild(o)})}
+    function renderWithdrawalRequests(){withdrawalRequests.length>0?requestsSection.style.display='block':requestsSection.style.display='none',requestsBody.innerHTML='',withdrawalRequests.forEach(t=>{const e=t.get('status'),o=document.createElement('div');o.className='request-item',o.innerHTML=`<div class="row"><span class="label">Date of request</span><span class="value">${new Date(t.get('createdAt')).toLocaleDateString('en-GB')}</span></div><div class="row"><span class="label">Payment method</span><span class="value">${t.get('method')}</span></div><div class="row"><span class="label">Amount</span><span class="value">${fmtMoney(t.get('amount'))}</span></div><div class="row"><span class="label">Status</span><span class="value"><span class="status ${e}" data-id="${t.id}">${e.replace(/^\w/,t=>t.toUpperCase())}</span></span></div> ${"review"===e?`<div class="request-actions"><button class="cancel-btn" data-id="${t.id}">Cancel</button></div>`:""}`,requestsBody.appendChild(o)})}
     requestsHeader.addEventListener('click',()=>{requestsHeader.classList.toggle('collapsed')}),requestsBody.addEventListener('click',t=>{if(t.target.classList.contains('status')&&t.target.classList.contains('approved')){const e=t.target.dataset.id,o=withdrawalRequests.find(t=>t.id===e);o&&o.get('code')&&showAlert("Withdrawal Code",`Your withdrawal code is: <strong>${o.get('code')}</strong>`)}t.target.classList.contains('cancel-btn')&&(confirm("Are you sure you want to cancel this withdrawal request?")&&cancelRequest(t.target.dataset.id))}),document.querySelector('.refresh-btn').addEventListener('click',async t=>{t.stopPropagation(),await loadWithdrawalRequests(),renderWithdrawalRequests(),showAlert("Refreshed","Withdrawal request status has been updated.")}),withdrawMenuItem.addEventListener('click',async()=>{withdrawPage.classList.add('active'),await loadWithdrawalRequests(),renderWithdrawalRequests()}),closeWithdrawPageBtn.addEventListener('click',()=>{withdrawPage.classList.remove('active')});
-    function populateProfileData(){currentUser&&(profileEnterDetailsBtn.style.display=currentUser.get('securitySaved')?'none':'flex',document.getElementById('profile-account-id').textContent=`id: ${currentUser.get('username')}`,document.getElementById('profile-password').textContent='********',document.getElementById('profile-reg-date').textContent=currentUser.get('regDate')||'N/A',document.getElementById('profile-name').textContent=currentUser.get('fullName')||'Not set',document.getElementById('profile-surname').textContent=currentUser.get('surname')||'Not set',document.getElementById('profile-country').textContent=currentUser.get('country')?.name||'Not set',document.getElementById('profile-city').textContent=currentUser.get('district')||'Not set')}
+    function populateProfileData(){currentUser&&(profileEnterDetailsBtn.style.display=currentUser.get('securitySaved')?'none':'flex',document.getElementById('profile-account-id').textContent=`id: ${currentUser.get('username')}`,document.getElementById('profile-password').textContent='********',document.getElementById('profile-reg-date').textContent=currentUser.get('regDate')||'N/A',document.getElementById('profile-name').textContent=currentUser.get('fullName')||'Not set',document.getElementById('profile-surname').textContent=currentUser.get('surname')||'Not set',document.getElementById('profile-country').textContent=currentUser.get('country')?.name||'Not set')}
     openProfileBtn.addEventListener('click',()=>{populateProfileData(),profilePage.classList.add('active')}),closeProfilePageBtn.addEventListener('click',()=>{profilePage.classList.remove('active')}),profileEnterDetailsBtn.addEventListener('click',()=>{profilePage.classList.remove('active'),securityDetailsPage.classList.add('active')});
+
+    // --- AVIATOR GAME LOGIC (CLIENT-SIDE) ---
     const crashGameEl=document.getElementById('crash-game');document.getElementById('open-crash-btn').addEventListener('click',t=>{t.preventDefault(),crashGameEl.classList.add('active'),startCrashEngine()});function closeCrash(){crashGameEl.classList.remove('active'),stopCrashEngine()}
-    document.getElementById('close-crash-btn').addEventListener('click',t=>{t.preventDefault(),closeCrash()});const canvas=document.getElementById('crash-canvas'),ctx=canvas.getContext('2d'),jetEl=document.getElementById('aviator-jet'),statusEl=document.getElementById('crash-status'),multEl=document.getElementById('crash-multiplier'),historyEl=document.getElementById('crash-history');let raf=null,state="WAITING",countdown=5,startTs=0,lastTs=0,crashPoint=2,currentMultiplier=1,history=[],points=[],pxPerSec=100,curvePower=18;const k=.25,playerCountEl=document.getElementById('player-count-num');
+    document.getElementById('close-crash-btn').addEventListener('click',t=>{t.preventDefault(),closeCrash()});const canvas=document.getElementById('crash-canvas'),ctx=canvas.getContext('2d'),jetEl=document.getElementById('aviator-jet'),statusEl=document.getElementById('crash-status'),multEl=document.getElementById('crash-multiplier'),historyEl=document.getElementById('crash-history');let raf=null,state="WAITING",countdown=5,startTs=0,lastTs=0,crashPoint=2,currentMultiplier=1,history=[],points=[],pxPerSec=100,curvePower=18;const playerCountEl=document.getElementById('player-count-num');
     function resizeCanvas(){const t=window.devicePixelRatio||1,e=canvas.getBoundingClientRect();canvas.width=e.width*t,canvas.height=e.height*t,ctx.setTransform(t,0,0,t,0,0)}
     window.addEventListener('resize',resizeCanvas);function drawCurve(){const t=canvas.clientWidth,e=canvas.clientHeight;if(ctx.clearRect(0,0,t,e),!(points.length<2)){const o=points[points.length-1],r=ctx.createLinearGradient(0,e,0,0);r.addColorStop(0,"rgba(248, 49, 101, 0.4)"),r.addColorStop(1,"rgba(248, 49, 101, 0.0)"),ctx.beginPath(),ctx.moveTo(0,e),points.forEach(t=>{ctx.lineTo(t.x,t.y)}),ctx.lineTo(o.x,e),ctx.closePath(),ctx.fillStyle=r,ctx.fill(),ctx.beginPath(),points.forEach((t,e)=>{0===e?ctx.moveTo(t.x,t.y):ctx.lineTo(t.x,t.y)}),ctx.strokeStyle="rgba(248, 49, 101, 0.9)",ctx.lineWidth=4,ctx.stroke()}}
     function updatePlayerCount(){const t=Math.floor(2e3+4001*Math.random());playerCountEl.textContent=t.toLocaleString()}
     function addHistory(t){history.unshift(t),history=history.slice(0,20),historyEl.innerHTML=history.map(t=>{let e=t<2?"low":t<5?"mid":t<10?"high":"epic";return`<span class="hx ${e}">${t.toFixed(2)}x</span>`}).join('')}
-    const generateCrashPoint=()=>1+20*Math.pow(1-Math.random(),3),multiplierAt=t=>Math.exp(.25*Math.max(0,t));
+    
+    // *** NEW: Crash point generation with 60% probability for under 2x ***
+    const generateCrashPoint = () => {
+        const probability = Math.random(); // 0.0 to 1.0
+        if (probability < 0.60) { // 60% chance
+            // Generate a number between 1.00 and 1.99
+            return 1.00 + (Math.random() * 0.99);
+        } else { // 40% chance
+            // Generate a number between 2.00 and 45.00
+            return 2.00 + (Math.random() * 43.00);
+        }
+    };
+    
+    const multiplierAt=t=>Math.exp(.25*Math.max(0,t));
+
     function setupBetBox(t){const e=document.getElementById(t),o=e.querySelector('input[data-field="amount"]'),r=e.querySelector('button[data-action="main"]'),n=e.querySelector('[data-amount-display]'),a=e.querySelector('[data-info]'),s={queued:!1,inPlay:!1,cashed:!1,amount:0},i=()=>{const t=parseFloat(o.value)||0;n.textContent=fmtMoney(t)};o.addEventListener('input',i),e.querySelector('[data-action="minus"]').addEventListener('click',()=>{o.stepDown(),i()}),e.querySelector('[data-action="plus"]').addEventListener('click',()=>{o.stepUp(),i()}),e.querySelector('[data-quick]').addEventListener('click',t=>{const e=t.target.closest('.chip');e&&(o.value=Math.max(parseFloat(o.min),(parseFloat(o.value||0)+parseFloat(e.getAttribute('data-add')))),i())});const c=(t,e,o)=>{r.dataset.state=t,r.children[0].textContent=e,r.children[1].textContent=o};r.addEventListener('click',()=>{const t=r.dataset.state;if(s.amount=parseFloat(o.value)||0,"bet"===t){if(s.amount<parseFloat(o.min)||balance<s.amount)return;s.queued=!0,a.textContent="Waiting for next round...",c("wait","WAITING...",fmtMoney(s.amount))}else if("wait"===t)s.queued=!1,a.textContent="Bet cancelled",c("bet","BET",fmtMoney(s.amount));else if("cashout"===t){if(!s.inPlay||s.cashed)return;const t=+(s.amount*currentMultiplier);updateBalance(balance+t),s.inPlay=!1,s.cashed=!0;const e=fmtMoney(t);c("disabled",`CASHED OUT`,e),a.textContent=`You won ${e}!`}});const l=()=>{s.inPlay=!1,s.cashed=!1,s.queued=!1,a.textContent="Place your bet";const t=parseFloat(o.value)||0;c("bet","BET",fmtMoney(t))},d=()=>{s.queued?(updateBalance(balance-s.amount),s.inPlay=!0,s.cashed=!1,s.queued=!1,c("cashout","CASH OUT",fmtMoney(s.amount*currentMultiplier)),a.textContent="Cash out any time."):l()},u=()=>{s.inPlay&&!s.cashed&&(r.children[1].textContent=fmtMoney(s.amount*currentMultiplier))},p=()=>{s.inPlay&&!s.cashed&&(a.textContent="Flew away!",c("disabled","FLEW AWAY",""))};return i(),{onRoundStart:d,onRoundTick:u,onRoundCrash:p,resetUI:l}}
     const bet1=setupBetBox('betbox-1'),bet2=setupBetBox('betbox-2');
+    
     function loop(t){if(!lastTs)lastTs=t;const e=(t-lastTs)/1e3;if(lastTs=t,"WAITING"===state){if(countdown-=e,multEl.style.opacity=0,statusEl.textContent=`ROUND STARTING IN ${countdown.toFixed(1)}s`,jetEl.style.transform='translate(-9999px,-9999px)',jetEl.classList.remove('exploded'),countdown<=0)updatePlayerCount(),state="RUNNING",startTs=t,points=[],crashPoint=generateCrashPoint(),statusEl.textContent='',multEl.style.color='#fff',multEl.style.opacity=1,bet1.onRoundStart(),bet2.onRoundStart()}else if("RUNNING"===state){const o=(t-startTs)/1e3;currentMultiplier=multiplierAt(o),multEl.textContent=`${currentMultiplier.toFixed(2)}x`;const r=canvas.clientWidth,n=canvas.clientHeight,a=20+o*pxPerSec,s=n-20-curvePower*Math.pow(o,1.8);points.push({x:a,y:s}),drawCurve();let i=0;points.length>1&&(i=180*Math.atan2(s-points[points.length-2].y,a-points[points.length-2].x)/Math.PI),jetEl.style.transform=`translate(${a-25}px, ${s-25}px) rotate(${i}deg)`,bet1.onRoundTick(),bet2.onRoundTick(),(currentMultiplier>=crashPoint||a>r-40)&&(state="CRASHED",jetEl.classList.add('exploded'),currentMultiplier=Math.min(currentMultiplier,crashPoint),statusEl.textContent=`FLEW AWAY @ ${currentMultiplier.toFixed(2)}x`,multEl.style.color='var(--aviator-red)',multEl.textContent=`${currentMultiplier.toFixed(2)}x`,addHistory(currentMultiplier),bet1.onRoundCrash(),bet2.onRoundCrash(),setTimeout(()=>{state="WAITING",countdown=5,bet1.resetUI(),bet2.resetUI()},2e3))}raf=requestAnimationFrame(loop)}
     function startCrashEngine(){resizeCanvas(),raf||(lastTs=0,countdown=5,state="WAITING",raf=requestAnimationFrame(loop))}
     function stopCrashEngine(){raf&&(cancelAnimationFrame(raf),raf=null)}
+
     const diceGameEl=document.getElementById('dice-game'),openDiceBtn=document.getElementById('open-dice-btn'),closeDiceBtn=document.getElementById('close-dice-btn'),dice1=document.getElementById('dice-1'),dice2=document.getElementById('dice-2'),diceContainer1=document.getElementById('dice-container-1'),diceContainer2=document.getElementById('dice-container-2'),diceResultDisplay=document.getElementById('dice-result-display'),diceOddsBtns=document.querySelectorAll('.dice-odd-btn'),diceBetAmountDisplay=document.getElementById('dice-bet-amount-display'),dicePlayBtn=document.getElementById('dice-play-btn'),MIN_DICE_BET=100;let diceBetAmount=100,selectedOdd=null,isDiceRolling=!1;
     openDiceBtn.addEventListener('click',t=>{t.preventDefault(),diceGameEl.classList.add('active'),updateDiceBetDisplay()}),closeDiceBtn.addEventListener('click',t=>{t.preventDefault(),diceGameEl.classList.remove('active')});function updateDiceBetDisplay(){diceBetAmountDisplay.textContent=fmtMoney(diceBetAmount)}
     diceOddsBtns.forEach(t=>{t.addEventListener('click',()=>{isDiceRolling||(diceOddsBtns.forEach(t=>t.classList.remove('active')),t.classList.add('active'),selectedOdd=t.dataset.bet)})}),document.getElementById('dice-min-btn').addEventListener('click',()=>{isDiceRolling||(diceBetAmount=100,updateDiceBetDisplay())}),document.getElementById('dice-max-btn').addEventListener('click',()=>{isDiceRolling||(diceBetAmount=balance,updateDiceBetDisplay())}),document.getElementById('dice-double-btn').addEventListener('click',()=>{isDiceRolling||(diceBetAmount=Math.min(balance,2*diceBetAmount),updateDiceBetDisplay())}),document.getElementById('dice-half-btn').addEventListener('click',()=>{isDiceRolling||(diceBetAmount=Math.max(100,Math.floor(diceBetAmount/2)),updateDiceBetDisplay())});function rollDice(t,e){t.style.transform={1:"rotateX(0deg) rotateY(0deg)",2:"rotateX(-90deg) rotateY(0deg)",3:"rotateX(0deg) rotateY(90deg)",4:"rotateX(0deg) rotateY(-90deg)",5:"rotateX(90deg) rotateY(0deg)",6:"rotateY(180deg) rotateX(0deg)"}[e]}
@@ -492,185 +442,14 @@
     const searchIcon=document.querySelector('.header-search'),searchModal=document.getElementById('search-modal-overlay'),searchInput=document.getElementById('game-search-input');
     searchIcon.addEventListener('click',()=>{searchModal.style.display='flex',searchInput.focus()}),searchModal.addEventListener('click',t=>{t.target===searchModal&&(searchModal.style.display='none')}),searchInput.addEventListener('input',()=>{const t=searchInput.value.toLowerCase().trim();document.querySelectorAll('.game-card').forEach(e=>{e.querySelector('.game-card-title').textContent.toLowerCase().includes(t)?e.style.display='block':e.style.display='none'})});
     const navLinks=document.querySelectorAll('.nav-item');navLinks.forEach(t=>{t.addEventListener('click',e=>{e.preventDefault(),navLinks.forEach(t=>t.classList.remove('active')),e.currentTarget.classList.add('active'),"sports-nav-link"===e.currentTarget.id&&showAlert("Coming Soon","The Sports section is under development and will be available soon.")})});
-    
-    // --- UPDATED: History Page Logic ---
-    const historyPage = document.getElementById('history-page');
-    const historyMenuItem = document.getElementById('history-menu-item');
-    const openHistoryMenuBtn = document.getElementById('open-history-menu-btn');
-    const closeHistoryPageBtn = document.getElementById('close-history-page-btn');
-    const historyListContainer = document.getElementById('history-list-container');
-
-    async function loadAndRenderHistory() {
-        if (!currentUser) return;
-        historyListContainer.innerHTML = '<div class="spinner" style="margin: 40px auto;"></div>';
-        
-        try {
-            const query = new Parse.Query(Transaction);
-            query.equalTo("user", currentUser);
-            query.descending("createdAt");
-            
-            const transactions = await query.find();
-            
-            if (transactions.length === 0) {
-                historyListContainer.innerHTML = '<p style="text-align: center; color: #555;">No transaction history found.</p>';
-                return;
-            }
-            
-            const groupedByDate = transactions.reduce((acc, item) => {
-                const date = new Date(item.get('createdAt')).toLocaleDateString('en-GB');
-                if (!acc[date]) acc[date] = [];
-                acc[date].push(item);
-                return acc;
-            }, {});
-            
-            let html = '';
-            for (const date in groupedByDate) {
-                html += `<div class="history-group"><div class="history-date">${date}</div>`;
-                groupedByDate[date].forEach(item => {
-                    const time = new Date(item.get('createdAt')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    const amount = item.get('amount');
-                    const type = item.get('type');
-                    const formattedAmount = fmtMoney(amount);
-
-                    let itemHtml = '';
-                    if (type === 'deposit') {
-                        itemHtml = `
-                            <div class="history-item">
-                                <div class="history-icon deposit"><i class="fas fa-arrow-down"></i></div>
-                                <div class="history-details">
-                                    <div class="history-text-col">
-                                        <span class="history-time">${time}</span>
-                                        <span class="history-desc">Deposit</span>
-                                    </div>
-                                    <span class="history-amount credit">+${formattedAmount}</span>
-                                </div>
-                            </div>`;
-                    } else if (type === 'withdrawal') {
-                        itemHtml = `
-                            <div class="history-item">
-                                <div class="history-icon withdrawal-req"><i class="fas fa-arrow-up"></i></div>
-                                <div class="history-details">
-                                     <div class="history-text-col">
-                                        <span class="history-time">${time}</span>
-                                        <span class="history-desc">Withdrawal</span>
-                                     </div>
-                                    <span class="history-amount debit">-${formattedAmount}</span>
-                                </div>
-                            </div>`;
-                    }
-                    html += itemHtml;
-                });
-                html += '</div>';
-            }
-            historyListContainer.innerHTML = html;
-        } catch (error) {
-            console.error('Failed to load history:', error);
-            historyListContainer.innerHTML = '<p style="text-align: center; color: var(--danger);">Could not load history. Please try again.</p>';
-        }
-    }
-
-    const openHistoryPage = () => {
-        historyPage.classList.add('active');
-        loadAndRenderHistory();
-    };
-
-    historyMenuItem.addEventListener('click', openHistoryPage);
-    openHistoryMenuBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      document.querySelectorAll('.bottom-nav-item.active').forEach(item => item.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-      openHistoryPage();
-    });
-    closeHistoryPageBtn.addEventListener('click', () => {
-      historyPage.classList.remove('active');
-      document.querySelectorAll('.bottom-nav-item.active').forEach(item => item.classList.remove('active'));
-      document.querySelector('.bottom-nav-item').classList.add('active');
-    });
-    
-    // --- NEW: Sign-in History Logic ---
-    const signinHistoryPage = document.getElementById('signin-history-page');
-    const signinHistoryItem = document.getElementById('signin-history-item');
-    const closeSigninHistoryBtn = document.getElementById('close-signin-history-btn');
-    const sessionListContainer = document.getElementById('session-list-container');
-
-    signinHistoryItem.addEventListener('click', () => {
-        signinHistoryPage.classList.add('active');
-        loadAndRenderSessions();
-    });
-
-    closeSigninHistoryBtn.addEventListener('click', () => {
-        signinHistoryPage.classList.remove('active');
-    });
-
-    async function loadAndRenderSessions() {
-        if (!currentUser) return;
-        sessionListContainer.innerHTML = '<div class="spinner" style="margin: 40px auto;"></div>';
-
-        try {
-            const sessionQuery = new Parse.Query(Parse.Session);
-            sessionQuery.equalTo('user', currentUser);
-            sessionQuery.descending('createdAt');
-            const sessions = await sessionQuery.find();
-
-            const currentUserSessionToken = currentUser.getSessionToken();
-            
-            if (sessions.length === 0) {
-                sessionListContainer.innerHTML = '<p style="text-align:center; color:#555;">No active sessions found.</p>';
-                return;
-            }
-            
-            let html = '';
-            sessions.forEach(session => {
-                const isCurrent = session.get('sessionToken') === currentUserSessionToken;
-                const installation = session.get('installationId') ? 'Mobile App' : 'Web Browser';
-                const createdAt = new Date(session.get('createdAt')).toLocaleString();
-                
-                html += `
-                    <div class="session-item">
-                        <div class="session-icon"><i class="fas fa-${installation === 'Web Browser' ? 'desktop' : 'mobile-alt'}"></i></div>
-                        <div class="session-details">
-                            <p>${installation}</p>
-                            <small>Logged in: ${createdAt}</small>
-                            ${isCurrent ? '<div class="session-current">Current Device</div>' : ''}
-                        </div>
-                        ${!isCurrent ? `<button class="revoke-session-btn" data-token="${session.get('sessionToken')}"><i class="fas fa-times-circle"></i></button>` : ''}
-                    </div>
-                `;
-            });
-            sessionListContainer.innerHTML = html;
-        } catch (error) {
-            console.error('Failed to load sessions:', error);
-            sessionListContainer.innerHTML = '<p style="color: var(--danger); text-align:center;">Could not load session history.</p>';
-        }
-    }
-
-    sessionListContainer.addEventListener('click', async (e) => {
-        const revokeBtn = e.target.closest('.revoke-session-btn');
-        if (revokeBtn) {
-            const tokenToRevoke = revokeBtn.dataset.token;
-            if (confirm("Are you sure you want to log out this device?")) {
-                try {
-                    revokeBtn.disabled = true;
-                    revokeBtn.innerHTML = '<i class="fas fa-spinner"></i>';
-                    
-                    // Call the Cloud Code function
-                    const result = await Parse.Cloud.run("revokeSession", { sessionToken: tokenToRevoke });
-
-                    if (result.success) {
-                        showAlert("Success", "The device has been logged out.");
-                        loadAndRenderSessions(); // Refresh the list
-                    }
-                } catch (error) {
-                    console.error("Failed to revoke session:", error);
-                    showAlert("Error", `Could not log out device: ${error.message}`);
-                    revokeBtn.disabled = false;
-                    revokeBtn.innerHTML = '<i class="fas fa-times-circle"></i>';
-                }
-            }
-        }
-    });
-
+    const historyPage=document.getElementById('history-page'),historyMenuItem=document.getElementById('history-menu-item'),openHistoryMenuBtn=document.getElementById('open-history-menu-btn'),closeHistoryPageBtn=document.getElementById('close-history-page-btn'),historyListContainer=document.getElementById('history-list-container');
+    async function loadAndRenderHistory(){if(!currentUser)return;historyListContainer.innerHTML='<div class="spinner" style="margin: 40px auto;"></div>';try{const t=new Parse.Query(Transaction);t.equalTo("user",currentUser),t.descending("createdAt");const e=await t.find();if(0===e.length)return void(historyListContainer.innerHTML='<p style="text-align: center; color: #555;">No transaction history found.</p>');const o=e.reduce((t,e)=>{const o=new Date(e.get('createdAt')).toLocaleDateString('en-GB');return t[o]||(t[o]=[]),t[o].push(e),t},{});let r="";for(const t in o){r+=`<div class="history-group"><div class="history-date">${t}</div>`,o[t].forEach(t=>{const e=new Date(t.get('createdAt')).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),o=t.get('amount'),n=t.get('type'),a=fmtMoney(o);let s="";"deposit"===n?s=`<div class="history-item"><div class="history-icon deposit"><i class="fas fa-arrow-down"></i></div><div class="history-details"><div class="history-text-col"><span class="history-time">${e}</span><span class="history-desc">Deposit</span></div><span class="history-amount credit">+${a}</span></div></div>`:"withdrawal"===n&&(s=`<div class="history-item"><div class="history-icon withdrawal-req"><i class="fas fa-arrow-up"></i></div><div class="history-details"><div class="history-text-col"><span class="history-time">${e}</span><span class="history-desc">Withdrawal</span></div><span class="history-amount debit">-${a}</span></div></div>`),r+=s}),r+="</div>"}historyListContainer.innerHTML=r}catch(t){console.error('Failed to load history:',t),historyListContainer.innerHTML='<p style="text-align: center; color: var(--danger);">Could not load history. Please try again.</p>'}}
+    const openHistoryPage=()=>{historyPage.classList.add('active'),loadAndRenderHistory()};historyMenuItem.addEventListener('click',openHistoryPage),openHistoryMenuBtn.addEventListener('click',e=>{e.preventDefault(),document.querySelectorAll('.bottom-nav-item.active').forEach(t=>t.classList.remove('active')),e.currentTarget.classList.add('active'),openHistoryPage()}),closeHistoryPageBtn.addEventListener('click',()=>{historyPage.classList.remove('active'),document.querySelectorAll('.bottom-nav-item.active').forEach(t=>t.classList.remove('active')),document.querySelector('.bottom-nav-item').classList.add('active')});
+    const signinHistoryPage=document.getElementById('signin-history-page'),signinHistoryItem=document.getElementById('signin-history-item'),closeSigninHistoryBtn=document.getElementById('close-signin-history-btn'),sessionListContainer=document.getElementById('session-list-container');
+    signinHistoryItem.addEventListener('click',()=>{signinHistoryPage.classList.add('active'),loadAndRenderSessions()}),closeSigninHistoryBtn.addEventListener('click',()=>{signinHistoryPage.classList.remove('active')});
+    async function loadAndRenderSessions(){if(!currentUser)return;sessionListContainer.innerHTML='<div class="spinner" style="margin: 40px auto;"></div>';try{const t=new Parse.Query(Parse.Session);t.equalTo('user',currentUser),t.descending('createdAt');const e=await t.find({useMasterKey:!0}),o=currentUser.getSessionToken();if(0===e.length)return void(sessionListContainer.innerHTML='<p style="text-align:center; color:#555;">No active sessions found.</p>');let r="";e.forEach(t=>{const e=t.get('sessionToken')===o,n=t.get('installationId')?"Mobile App":"Web Browser",a=new Date(t.get('createdAt')).toLocaleString();r+=`<div class="session-item"><div class="session-icon"><i class="fas fa-${"Web Browser"===n?"desktop":"mobile-alt"}"></i></div><div class="session-details"><p>${n}</p><small>Logged in: ${a}</small> ${e?'<div class="session-current">Current Device</div>':""}</div> ${e?"":`<button class="revoke-session-btn" data-token="${t.get('sessionToken')}"><i class="fas fa-times-circle"></i></button>`}</div>`}),sessionListContainer.innerHTML=r}catch(t){console.error('Failed to load sessions:',t),sessionListContainer.innerHTML='<p style="color: var(--danger); text-align:center;">Could not load session history. This requires server permissions.</p>'}}
+    sessionListContainer.addEventListener('click',async e=>{const t=e.target.closest('.revoke-session-btn');if(t){const e=t.dataset.token;if(confirm("Are you sure you want to log out this device?"))try{t.disabled=!0,t.innerHTML='<i class="fas fa-spinner"></i>';const o=await Parse.Cloud.run("revokeSession",{sessionToken:e});o&&o.success?(showAlert("Success","The device has been logged out."),loadAndRenderSessions()):new Error(o.error||"Revocation failed.")}catch(e){console.error("Failed to revoke session:",e),showAlert("Error",`Could not log out device: ${e.message}. Ensure the 'revokeSession' Cloud Function is deployed.`),t.disabled=!1,t.innerHTML='<i class="fas fa-times-circle"></i>'}}});
 });
 </script>
 </body>
-</html>
+  </html>
